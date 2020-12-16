@@ -1,0 +1,2 @@
+cd ../../../fibo/src 
+cls 

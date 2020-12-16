@@ -120,14 +120,10 @@ work t0 n = do
 ---------------------------------------------
 pipeline :: (Double -> Double -> Double) -> Int -> [Double] -> Double
 pipeline func n list = runPar $ do
-        strm <- strmFrList list
-        -- strm <- streamFromList list n n
-        
+        strm <- streamFromList list n n
         xs   <- streamFold func 0 strm
         return (xs)
     
-    
-
 
 
 ----------------------------------------------------------------

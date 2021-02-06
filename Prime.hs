@@ -4,8 +4,8 @@ import System.Process (system)
 import Data.Time.Clock (getCurrentTime, diffUTCTime)
 
 import Control.DeepSeq (NFData, rnf)
-import Control.Monad.Par
--- import EstudoPar
+-- import Control.Monad.Par
+import EstudoPar
 
 -----------------------------------------------------
 -----------------------------------------------------
@@ -23,15 +23,74 @@ instance NFData a => NFData (IList a) where
 -----------------------------------------------------
 main = do
         system "clear"
+        -- r <- serial resolve junta [2.. 10000000]
+        -- print r
+
         t0 <- getCurrentTime
         -- print $ runPar $ reduce4 [1..100000] -- ghci
-        print $ runPar $ pipe7c [1..10000000] -- compile
+        print $ runPar $ pipe5 16 [1..100000] -- compile
+        -- print $ last $ take 664579 lazyPrimes -- 9.7
+        -- print $ length $ takeWhile (<10000000) lazyPrimes
+        -- print $ serial resolve junta [2.. 10000000]
+        -- print $ runPar $ reduce2 49 [1..10000] -- ghci
+        
         t1 <- getCurrentTime
         print (diffUTCTime t1 t0)
+
+
+
+
+
+taskIO = do
+        r <- serial resolve junta [2.. 100000]
+        print r
+        
+        
+
+{----------------------------------------------------
+taskIO0 r = do
+        t0 <- getCurrentTime
+        print $ runPar $ reduce0 [1..(100000+r)]
+        t1 <- getCurrentTime
+        print (diffUTCTime t1 t0)
+        print r
+----------------------------------------------------}
+
+taskIO0 r = do
+        t0 <- getCurrentTime
+        print $ runPar $ reduce2 r [1..100000]
+        t1 <- getCurrentTime
+        print (diffUTCTime t1 t0)
+
+taskIO1 r = do
+        t0 <- getCurrentTime
+        print $ runPar $ pipe5a r [1..100000]
+        t1 <- getCurrentTime
+        print (diffUTCTime t1 t0)
+
+taskIO2 r = do
+        t0 <- getCurrentTime
+        print $ runPar $ pipe5a r [1..100000]
+        t1 <- getCurrentTime
+        print (diffUTCTime t1 t0)
+
 -----------------------------------------------------
 -----------------------------------------------------
 
 
+
+
+serial :: Show b => (a -> b) -> (b -> b -> b) -> [a] -> IO b
+serial f g m = do
+    t0 <- getCurrentTime
+    let r = go m
+    print r
+    t1 <- getCurrentTime
+    print (diffUTCTime t1 t0)
+    return r  
+  where
+    go [x] = f x
+    go (x:xs) = (g . f) x (go xs)
 
 
 
@@ -75,14 +134,16 @@ reduce4 m = go (particiona 16 m) where
 
 
 
+
 -----------------------------------------------------
+-- pipe5a fez esta versão parecer o monstro de Frankenstein 
 -----------------------------------------------------
-pipe5 :: [Integer] -> Par Int
-pipe5 m = go (particiona 16 m) where
+pipe5 :: Int -> [Integer] -> Par Int
+pipe5 r m = go (particiona r m) where
     go xss = do
-        vars <- replicateM new xss
-        mapM_ (\(v, a) -> fork $ put v (primerange a)) (zip vars xss)
-        ys <- mapM get vars
+        ivars <- replicateM new xss
+        mapM_ (\(v, a) -> fork $ put v (some resolve junta a)) (zip ivars xss)
+        ys <- mapM get ivars
         return (foldr junta 0 ys)
 -----------------------------------------------------
 replicateM :: Par (IVar Int) -> [[Integer]] -> Par [(IVar Int)]
@@ -98,10 +159,57 @@ replicateM mx = go where
 
 
 
+
+
+
+-----------------------------------------------------
+-- totalmente equivalente a pipe5 (?) sim! (comprovado pelo bench)
+-----------------------------------------------------
+pipe5a :: Int -> [Integer] -> Par Int
+pipe5a r m = go (particiona r m) where
+    go xss = do
+        ivars <- mapM (spawnP . some resolve junta) xss
+        ys    <- mapM get ivars
+        return (foldr junta 0 ys)
+
 -----------------------------------------------------
 -----------------------------------------------------
-pipe6a :: [Integer] -> Par Int
-pipe6a m = sfold 0 =<< (toilist (particiona 16 m))
+
+
+
+
+{-----------------------------------------------------
+-----------------------------------------------------
+pipe5b :: Int -> [Integer] -> Par Int
+pipe5b r m = go (particiona r m) where
+    go xss = do 
+        ivars <- mapM (spawnP . some resolve junta) xss
+        ys    <- mapM get ivars
+        return (foldr junta 0 ys)
+        -- ys    <- mapM (sfold 0) ivars
+        -- return (foldr junta 0 ys)
+
+    -----------------------------------------------------
+    -- sfold :: Int -> IVar (IList [Integer]) -> Par Int
+    sfold acc m = acc `seq` do
+        list <- get m
+        case list of 
+            Nil -> return acc
+            Cons x xs -> sfold (junta acc x) xs
+
+-----------------------------------------------------
+-----------------------------------------------------}
+
+
+
+
+
+
+-----------------------------------------------------
+-- melhor que 6b
+-----------------------------------------------------
+pipe6a :: Int -> [Integer] -> Par Int
+pipe6a r m = sfold 0 =<< (toilist (particiona r m))
 -----------------------------------------------------
   where
     toilist :: NFData a => [a] -> Par (IVar (IList a))
@@ -133,9 +241,10 @@ pipe6a m = sfold 0 =<< (toilist (particiona 16 m))
 
 
 -----------------------------------------------------
+-- o 6a é melhor
 -----------------------------------------------------
-pipe6b :: [Integer] -> Par Int
-pipe6b m = sfold 0 =<< (toilist (particiona 16 m))
+pipe6b :: Int -> [Integer] -> Par Int
+pipe6b r m = sfold 0 =<< (toilist (particiona r m))
 -----------------------------------------------------
   where
     toilist :: [[Integer]] -> Par (IVar (IList Int))
@@ -165,16 +274,20 @@ pipe6b m = sfold 0 =<< (toilist (particiona 16 m))
 
 
 
+
+
+
+
 -----------------------------------------------------
 -----------------------------------------------------
-pipe7 :: [Integer] -> Par Int
-pipe7 m = sfold 0 =<< (toilist (particiona 16 m))
+pipe7 :: Int -> [Integer] -> Par Int
+pipe7 r m = sfold 0 =<< (toilist (particiona 16 m))
 -----------------------------------------------------
   where
     toilist :: [[Integer]] -> Par (IVar (IList Int))
     toilist m = do
         v <- new
-        fork $ loop 0 m v
+        fork $ loop r m v
         return v
 
       where
@@ -205,15 +318,16 @@ pipe7 m = sfold 0 =<< (toilist (particiona 16 m))
 
 
 -----------------------------------------------------
+-- equiparado a 6a em tempo
 -----------------------------------------------------
-pipe7b :: [Integer] -> Par Int
-pipe7b m = sfold 0 =<< smap =<< (toilist (particiona 16 m))
+pipe7b :: Int -> [Integer] -> Par Int
+pipe7b r m = sfold 0 =<< smap =<< (toilist (particiona 16 m))
 -----------------------------------------------------
   where
     -- toilist :: [[Integer]] -> Par (IVar (IList Int))
     toilist m = do
         v <- new
-        fork $ loop 200 m v
+        fork $ loop r m v
         return v
 
       where
@@ -221,7 +335,7 @@ pipe7b m = sfold 0 =<< smap =<< (toilist (particiona 16 m))
 
         loop 0 (x:xs) v = do
                          nv <- new
-                         put v $ Forque (loop 200 xs nv) (Cons x nv)
+                         put v $ Forque (loop r xs nv) (Cons x nv)
 
         loop n (x:xs) v = do
                          nv <- new
@@ -325,7 +439,7 @@ pipe7c m = do
         list <- get m
         case list of 
             Nil -> do
-                    -- msg s
+                    --msg s
                     return acc
             Cons x xs -> sfold1 (junta acc x) xs s
     -----------------------------------------------------
@@ -334,7 +448,7 @@ pipe7c m = do
         list <- get m
         case list of 
             Nil -> do
-                    -- msg s
+                    --msg s
                     return acc
             Cons x xs -> sfold2 (junta acc (primerange x)) xs s
             
@@ -361,6 +475,52 @@ reduce0 = go where
 
 
 
+
+
+-----------------------------------------------------
+-----------------------------------------------------
+reduce1 :: Int -> [Integer] -> Par Int
+reduce1 r = go  where -- range based
+    go [a] = return (resolve a)
+    
+    go xs | length xs < r = do
+                a <- go as
+                b <- go bs
+                return (junta a b)
+          
+          | otherwise = do
+                v <- spawn (go bs)
+                a <- go as
+                b <- get v
+                return (junta a b)
+      where
+        (as, bs) = divideBy2 xs
+-----------------------------------------------------
+-----------------------------------------------------
+        
+        
+        
+-----------------------------------------------------
+-----------------------------------------------------
+reduce2 :: Int -> [Integer] -> Par Int
+reduce2 r m = go (particiona r m) where -- partition
+    go [a] = return (some resolve junta a)
+    go xs = do
+            v <- spawn (go bs)
+            a <- go as
+            b <- get v
+            return (junta a b)
+      where
+        (as, bs) = divideBy2 xs
+
+some :: (a -> b) -> (b -> b -> b) -> [a] -> b
+some f g [x] = f x
+some f g (x:xs) = (g . f) x (some f g xs)        
+-----------------------------------------------------
+-----------------------------------------------------
+        
+        
+        
 
 -----------------------------------------------------
 -----------------------------------------------------

@@ -1,0 +1,27 @@
+664579 pipe7 20
+12.3506029s
+   7,906,966,952 bytes allocated in the heap
+   1,588,595,056 bytes copied during GC
+     400,157,616 bytes maximum residency (11 sample(s))
+      68,555,856 bytes maximum slop
+             914 MiB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      7551 colls,  7551 par    1.859s   0.759s     0.0001s    0.0014s
+  Gen  1        11 colls,    10 par    2.922s   1.424s     0.1294s    0.5823s
+
+  Parallel GC work balance: 0.00% (serial 0%, perfect 100%)
+
+  TASKS: 9 (1 bound, 8 peak workers (8 total), using -N4)
+
+  SPARKS: 0 (0 converted, 0 overflowed, 0 dud, 0 GC'd, 0 fizzled)
+
+  INIT    time    0.000s  (  0.002s elapsed)
+  MUT     time   10.312s  ( 10.311s elapsed)
+  GC      time    4.781s  (  2.183s elapsed)
+  EXIT    time    0.000s  (  0.000s elapsed)
+  Total   time   15.094s  ( 12.496s elapsed)
+
+  Alloc rate    766,736,189 bytes per MUT second
+
+  Productivity  68.3% of total user, 82.5% of total elapsed

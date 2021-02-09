@@ -1,0 +1,27 @@
+664579 pipe8 4
+5.3910622s
+   8,877,531,368 bytes allocated in the heap
+   1,751,352,080 bytes copied during GC
+     396,069,296 bytes maximum residency (12 sample(s))
+      71,628,368 bytes maximum slop
+            1047 MiB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0      4187 colls,  4187 par    1.312s   0.653s     0.0002s    0.0397s
+  Gen  1        12 colls,    11 par    2.969s   1.466s     0.1221s    0.4341s
+
+  Parallel GC work balance: 15.37% (serial 0%, perfect 100%)
+
+  TASKS: 6 (1 bound, 5 peak workers (5 total), using -N4)
+
+  SPARKS: 0 (0 converted, 0 overflowed, 0 dud, 0 GC'd, 0 fizzled)
+
+  INIT    time    0.000s  (  0.001s elapsed)
+  MUT     time    9.531s  (  3.418s elapsed)
+  GC      time    4.281s  (  2.118s elapsed)
+  EXIT    time    0.000s  (  0.000s elapsed)
+  Total   time   13.812s  (  5.538s elapsed)
+
+  Alloc rate    931,413,127 bytes per MUT second
+
+  Productivity  69.0% of total user, 61.7% of total elapsed

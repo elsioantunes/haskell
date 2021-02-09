@@ -1,0 +1,89 @@
+name:                paralelo5
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/githubuser/paralelo5#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Elsio Antunes
+maintainer:          tksmkd@gmail.com
+copyright:           2021 Elsio Antunes
+category:            computations
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+
+
+
+
+
+
+executable sokoban
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is TestAsync
+  hs-source-dirs:      src
+  main-is:             TestAsync.hs
+  other-modules:       Sokoban
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                       , time
+                       , process
+                       , deepseq
+                       , parallel
+                       , stm
+                       , random
+                       , async
+                       
+
+                       
+                       
+
+executable pipe
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is Pipe
+  hs-source-dirs:      src
+  main-is:             Pipe.hs
+  other-modules:       EstudoPar
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                       , time
+                       , process
+                       , deepseq
+                       , parallel
+                       , monad-par
+
+
+
+
+executable parprime
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is Prime
+  hs-source-dirs:      src
+  main-is:             Prime.hs
+  other-modules:       EstudoPar
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                       , time
+                       , process
+                       , deepseq
+                       , parallel
+  
+                       , monad-par
+
+
+
+executable bench
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is Bench
+  hs-source-dirs:      src
+  main-is:             Bench.hs
+  default-language:    Haskell2010
+  other-modules:       EstudoPar, Prime, Pipe
+  build-depends:       base >= 4.7 && < 5
+                       , time
+                       , process
+                       , deepseq
+                       , parallel
+                       , stm
+  
+                       , monad-par
+                       , criterion
+
+
+

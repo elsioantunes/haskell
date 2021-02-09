@@ -1,0 +1,215 @@
+
+
+
+MUT is the mutator time, i.e. the time spent actually running your code
+ 
+projects\paralelo5\pipe8.txt(20): MUT     time                    9.844s  (  4.169s elapsed)
+projects\paralelo5\pipe8 4.txt(20): MUT     time                  9.531s  (  3.418s elapsed)
+projects\paralelo5\pipe5a.txt(20): MUT     time                  10.062s  (  3.101s elapsed)
+projects\paralelo5\pipe5.txt(20): MUT     time                   10.172s  (  4.817s elapsed)
+projects\paralelo5\pipe7_0.txt(20): MUT     time                 10.031s  ( 10.068s elapsed)
+projects\paralelo5\pipe7_20.txt(20): MUT     time                10.312s  ( 10.311s elapsed)
+projects\paralelo5\pipe7_200.txt(20): MUT     time               10.766s  ( 10.977s elapsed)
+projects\paralelo5\pipe7c by4.txt(20): MUT     time              10.359s  (  4.028s elapsed)
+projects\paralelo5\reduce4.txt(20): MUT     time                 10.312s  (  4.660s elapsed)
+projects\paralelo5\pipe7b 0.txt(20): MUT     time                11.156s  ( 10.962s elapsed)
+projects\paralelo5\pipe8 36.txt(20): MUT     time                11.422s  (  3.875s elapsed)
+projects\paralelo5\pipe7b 200.txt(20): MUT     time              11.219s  ( 10.653s elapsed)
+projects\paralelo5\pipe8 100.txt(20): MUT     time               12.906s  (  5.175s elapsed)
+projects\paralelo5\pipe6b.txt(20): MUT     time                  13.672s  ( 13.690s elapsed)
+projects\paralelo5\pipe6a.txt(20): MUT     time                  14.562s  ( 14.295s elapsed)
+projects\paralelo5\pipe7b 30.txt(20): MUT     time               15.656s  ( 13.591s elapsed)
+projects\paralelo5\pipe7a 30.txt(20): MUT     time               15.359s  ( 13.318s elapsed)
+projects\paralelo5\reduce0.txt(20): MUT     time                 17.812s  (  4.876s elapsed)
+projects\paralelo5\pipe7b0 resolve 16.txt(20): MUT     time      22.484s  ( 17.595s elapsed)
+projects\paralelo5\pipe7b0 resolve 289.txt(20): MUT     time     23.562s  ( 18.307s elapsed)
+
+
+
+projects\paralelo5\reduce0.txt(27): Productivity                                57.5% of total user, 46.2% of total elapsed
+projects\paralelo5\pipe5a.txt(27): Productivity                                 68.2% of total user, 60.5% of total elapsed
+projects\paralelo5\pipe5.txt(27): Productivity                                  78.9% of total user, 65.9% of total elapsed
+projects\paralelo5\pipe8.txt(27): Productivity                                  79.4% of total user, 65.5% of total elapsed
+projects\paralelo5\stream5.txt(27): Productivity                                78.9% of total user, 65.9% of total elapsed
+projects\paralelo5\reduce4.txt(27): Productivity                                69.0% of total user, 69.6% of total elapsed
+projects\paralelo5\pipe7c by4.txt(27): Productivity                             82.8% of total user, 71.5% of total elapsed
+projects\paralelo5\pipe7_200.txt(27): Productivity                              65.8% of total user, 80.0% of total elapsed
+projects\paralelo5\pipe7b 200.txt(27): Productivity                             66.5% of total user, 80.6% of total elapsed
+projects\paralelo5\pipe7_0.txt(27): Productivity                                69.3% of total user, 82.4% of total elapsed
+projects\paralelo5\pipe7_20.txt(27): Productivity                               68.3% of total user, 82.5% of total elapsed
+projects\paralelo5\pipe7b 0.txt(27): Productivity                               72.9% of total user, 83.7% of total elapsed
+projects\paralelo5\pipe7b 30.txt(27): Productivity                              63.9% of total user, 84.0% of total elapsed
+projects\paralelo5\pipe6b.txt(27): Productivity                                 72.0% of total user, 85.8% of total elapsed
+projects\paralelo5\pipe6a.txt(27): Productivity                                 74.9% of total user, 86.6% of total elapsed
+projects\paralelo5\pipe7a 30.txt(27): Productivity                              64.3% of total user, 87.0% of total elapsed
+projects\paralelo5\pipe7b0 resolve 16.txt(27): Productivity                     97.7% of total user, 98.9% of total elapsed
+projects\paralelo5\pipe7b0 resolve 289.txt(27): Productivity                    98.9% of total user, 98.2% of total elapsed
+
+
+projects\paralelo5\pipe7_0.txt(13): Parallel GC work balance:                 0.00% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7_200.txt(13): Parallel GC work balance:               0.00% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7_20.txt(13): Parallel GC work balance:                0.00% (serial 0%, perfect 100%)
+projects\paralelo5\pipe6b.txt(13): Parallel GC work balance:                  0.01% (serial 0%, perfect 100%)
+projects\paralelo5\stream5.txt(13): Parallel GC work balance:                 0.02% (serial 0%, perfect 100%)
+projects\paralelo5\pipe5.txt(13): Parallel GC work balance:                   0.02% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7c by4.txt(13): Parallel GC work balance:              0.03% (serial 0%, perfect 100%)
+projects\paralelo5\reduce4.txt(13): Parallel GC work balance:                 0.03% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7a 30.txt(13): Parallel GC work balance:               1.96% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7b 200.txt(13): Parallel GC work balance:              6.47% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7b 0.txt(13): Parallel GC work balance:                7.61% (serial 0%, perfect 100%)
+projects\paralelo5\pipe6a.txt(13): Parallel GC work balance:                 11.38% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7b 30.txt(13): Parallel GC work balance:              15.40% (serial 0%, perfect 100%)
+projects\paralelo5\pipe8.txt(13): Parallel GC work balance:                  15.71% (serial 0%, perfect 100%)
+projects\paralelo5\pipe5a.txt(13): Parallel GC work balance:                 18.89% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7b0 resolve 16.txt(13): Parallel GC work balance:     18.64% (serial 0%, perfect 100%)
+projects\paralelo5\pipe7b0 resolve 289.txt(13): Parallel GC work balance:    24.35% (serial 0%, perfect 100%)
+projects\paralelo5\reduce0.txt(13): Parallel GC work balance:                26.84% (serial 0%, perfect 100%)
+
+
+
+
+The total memory in use tells you the peak memory the RTS has allocated from the OS.
+
+projects\paralelo5\pipe7b0 resolve 289.txt(7):      5 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7b0 resolve 16.txt(7):       7 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7a 30.txt(7):              817 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7c by4.txt(7):             840 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\reduce4.txt(7):                887 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7_20.txt(7):               914 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe6b.txt(7):                 914 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe8 36.txt(7):              1021 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7b 30.txt(7):             1026 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe8 100.txt(7):             1030 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe8 4.txt(7):               1047 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe6a.txt(7):                1049 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7_200.txt(7):             1049 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7_0.txt(7):               1049 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7b 0.txt(7):              1049 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe8.txt(7):                 1051 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe5.txt(7):                 1053 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\stream5.txt(7):               1053 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe7b 200.txt(7):            1121 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\pipe5a.txt(7):                1143 MiB total memory in use (0 MB lost due to fragmentation)
+projects\paralelo5\reduce0.txt(7):               1600 MiB total memory in use (0 MB lost due to fragmentation)
+
+
+
+The bytes allocated in the heap is the total bytes allocated by the program over the whole run.
+
+projects\paralelo5\pipe7_20.txt(3):             7,906,966,952 bytes allocated in the heap
+projects\paralelo5\pipe6a.txt(3):               7,906,980,736 bytes allocated in the heap
+projects\paralelo5\pipe6b.txt(3):               7,906,981,336 bytes allocated in the heap
+projects\paralelo5\pipe7_200.txt(3):            7,906,968,344 bytes allocated in the heap
+projects\paralelo5\pipe7_0.txt(3):              7,907,013,528 bytes allocated in the heap
+projects\paralelo5\reduce4.txt(3):              7,907,067,848 bytes allocated in the heap
+projects\paralelo5\pipe5.txt(3):                7,907,054,392 bytes allocated in the heap
+projects\paralelo5\stream5.txt(3):              7,907,054,392 bytes allocated in the heap
+projects\paralelo5\pipe7b 0.txt(3):             7,907,016,504 bytes allocated in the heap
+projects\paralelo5\pipe7b 200.txt(3):           7,907,008,440 bytes allocated in the heap
+projects\paralelo5\pipe7a 30.txt(3):            7,916,561,816 bytes allocated in the heap
+projects\paralelo5\pipe7b 30.txt(3):            7,916,610,800 bytes allocated in the heap
+projects\paralelo5\pipe8 100.txt(3):            7,990,644,600 bytes allocated in the heap
+projects\paralelo5\pipe5a.txt(3):               7,997,662,368 bytes allocated in the heap
+projects\paralelo5\pipe8 36.txt(3):             8,128,856,912 bytes allocated in the heap
+projects\paralelo5\pipe7c by4.txt(3):           8,804,952,264 bytes allocated in the heap
+projects\paralelo5\pipe8 4.txt(3):              8,877,531,368 bytes allocated in the heap
+projects\paralelo5\pipe8.txt(3):                8,877,729,552 bytes allocated in the heap
+projects\paralelo5\pipe7b0 resolve 289.txt(3): 23,404,289,480 bytes allocated in the heap
+projects\paralelo5\pipe7b0 resolve 16.txt(3):  23,444,175,664 bytes allocated in the heap
+projects\paralelo5\reduce0.txt(3):             37,275,442,016 bytes allocated in the heap
+
+
+
+GHC uses a copying garbage collector by default. 
+"bytes copied during GC" tells you 
+how many bytes it had to copy during garbage collection
+
+projects\paralelo5\pipe7c by4.txt(4):               1,508,622,504 bytes copied during GC
+projects\paralelo5\reduce4.txt(4):                  1,559,203,512 bytes copied during GC
+projects\paralelo5\pipe7a 30.txt(4):                1,562,883,432 bytes copied during GC
+projects\paralelo5\pipe7_20.txt(4):                 1,588,595,056 bytes copied during GC
+projects\paralelo5\pipe6b.txt(4):                   1,590,858,832 bytes copied during GC
+projects\paralelo5\pipe8 36.txt(4):                 1,731,508,072 bytes copied during GC
+projects\paralelo5\pipe8 100.txt(4):                1,745,636,376 bytes copied during GC
+projects\paralelo5\pipe8 4.txt(4):                  1,751,352,080 bytes copied during GC
+projects\paralelo5\pipe7b 30.txt(4):                1,754,564,704 bytes copied during GC
+projects\paralelo5\pipe7b 0.txt(4):                 1,755,583,232 bytes copied during GC
+projects\paralelo5\pipe7_200.txt(4):                1,756,309,856 bytes copied during GC
+projects\paralelo5\pipe7_0.txt(4):                  1,756,348,624 bytes copied during GC
+projects\paralelo5\pipe6a.txt(4):                   1,758,369,240 bytes copied during GC
+projects\paralelo5\pipe5.txt(4):                    1,760,796,968 bytes copied during GC
+projects\paralelo5\pipe8.txt(4):                    1,797,887,544 bytes copied during GC
+projects\paralelo5\pipe7b 200.txt(4):               1,846,846,544 bytes copied during GC
+projects\paralelo5\pipe5a.txt(4):                   1,860,988,776 bytes copied during GC
+projects\paralelo5\reduce0.txt(4):                  5,574,598,768 bytes copied during GC
+projects\paralelo5\pipe7b0 resolve 289.txt(4):         13,558,440 bytes copied during GC
+projects\paralelo5\pipe7b0 resolve 16.txt(4):          17,921,152 bytes copied during GC
+
+
+
+
+
+The bytes maximum slop 
+tells you the most space that is ever wasted 
+due to the way GHC allocates memory in blocks. 
+Slop is memory at the end of a block that was wasted. 
+There’s no way to control this; 
+we just like to see how much memory is being lost this way.
+
+projects\paralelo5\pipe7b0 resolve 289.txt(6):                  52,720 bytes maximum slop
+projects\paralelo5\pipe7b0 resolve 16.txt(6):                   67,056 bytes maximum slop
+projects\paralelo5\pipe7a 30.txt(6):                        52,161,936 bytes maximum slop
+projects\paralelo5\pipe5a.txt(6):                           55,715,512 bytes maximum slop
+projects\paralelo5\pipe8 100.txt(6):                        58,616,952 bytes maximum slop
+projects\paralelo5\pipe7b 30.txt(6):                        62,805,848 bytes maximum slop
+projects\paralelo5\pipe7c by4.txt(6):                       63,137,592 bytes maximum slop
+projects\paralelo5\pipe8 36.txt(6):                         64,396,048 bytes maximum slop
+projects\paralelo5\reduce4.txt(6):                          66,722,888 bytes maximum slop
+projects\paralelo5\pipe7b 200.txt(6):                       68,540,840 bytes maximum slop
+projects\paralelo5\pipe6b.txt(6):                           68,553,112 bytes maximum slop
+projects\paralelo5\pipe7b 0.txt(6):                         68,553,376 bytes maximum slop
+projects\paralelo5\pipe6a.txt(6):                           68,554,456 bytes maximum slop
+projects\paralelo5\pipe7_20.txt(6):                         68,555,856 bytes maximum slop
+projects\paralelo5\pipe5.txt(6):                            68,555,784 bytes maximum slop
+projects\paralelo5\stream5.txt(6):                          68,555,784 bytes maximum slop
+projects\paralelo5\pipe7_0.txt(6):                          68,556,864 bytes maximum slop
+projects\paralelo5\pipe7_200.txt(6):                        68,556,000 bytes maximum slop
+projects\paralelo5\pipe8 4.txt(6):                          71,628,368 bytes maximum slop
+projects\paralelo5\pipe8.txt(6):                            72,970,976 bytes maximum slop
+projects\paralelo5\reduce0.txt(6):                          78,069,504 bytes maximum slop
+
+
+
+
+The maximum space actually used by your program 
+is the bytes maximum residency figure. 
+This is only checked during major garbage collections, 
+so it is only an approximation; 
+the number of samples tells you how many times it is checked.
+
+projects\paralelo5\pipe7b0 resolve 289.txt(5):            66,064 bytes maximum residency (2 sample(s))
+projects\paralelo5\pipe7b0 resolve 16.txt(5):            211,472 bytes maximum residency (5 sample(s))
+projects\paralelo5\pipe7a 30.txt(5):                 304,382,576 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe7c by4.txt(5):                368,474,312 bytes maximum residency (11 sample(s))
+projects\paralelo5\pipe8 36.txt(5):                  376,177,904 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe7b 30.txt(5):                 382,367,912 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe8 100.txt(5):                 388,227,976 bytes maximum residency (12 sample(s))
+projects\paralelo5\reduce4.txt(5):                   389,391,288 bytes maximum residency (11 sample(s))
+projects\paralelo5\pipe8 4.txt(5):                   396,069,296 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe8.txt(5):                     398,298,400 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe6b.txt(5):                    400,090,728 bytes maximum residency (11 sample(s))
+projects\paralelo5\pipe5.txt(5):                     400,124,920 bytes maximum residency (12 sample(s))
+projects\paralelo5\stream5.txt(5):                   400,124,920 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe7_20.txt(5):                  400,157,616 bytes maximum residency (11 sample(s))
+projects\paralelo5\pipe7b 0.txt(5):                  400,168,288 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe6a.txt(5):                    400,322,856 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe7b 200.txt(5):                400,389,720 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe7_200.txt(5):                 400,464,672 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe7_0.txt(5):                   400,496,576 bytes maximum residency (12 sample(s))
+projects\paralelo5\pipe5a.txt(5):                    510,155,080 bytes maximum residency (12 sample(s))
+projects\paralelo5\reduce0.txt(5):                   523,412,152 bytes maximum residency (15 sample(s))
+
+
+
+
+

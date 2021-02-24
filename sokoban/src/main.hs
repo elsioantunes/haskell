@@ -12,17 +12,21 @@ import Control.Exception (finally)
 
 -----------------------------------------------------
 -----------------------------------------------------
-solver t0 semaf st = bfs 1 (setNew $ ordSt st) (setNew $ ordSt st)
+-- solver t0 semaf st = bfs 1 (setNew $ ordSt st) (setNew $ ordSt st)
+solver t0 semaf st = bfs 1 (setNew $ ordSt st)
   where 
-    bfs :: Int -> Set A -> Set A -> IO (Maybe A)
-    bfs iter set localSet = do
+    -- bfs :: Int -> Set A -> Set A -> IO (Maybe A)
+    -- bfs iter set localSet = do
+    bfs iter set = do
     
         debug iter t0 []
         
-        r <- loopIO set [(m, s) | s  <- tolist localSet, m  <- actions]
+        -- r <- loopIO set [(m, s) | s  <- tolist localSet, m  <- actions]
+        r <- loopIO set [(m, s) | s  <- tolist set, m  <- actions]
             
         case r of
-            (Nothing, sts') -> bfs iter' (updateSet set sts') (updateSet Empty sts')
+            -- (Nothing, sts') -> bfs iter' (updateSet set sts') (updateSet Empty sts')
+            (Nothing, sts') -> bfs iter' (updateSet set sts')
             (Just x, _)     -> return (Just x)
 
       where    
@@ -32,11 +36,13 @@ solver t0 semaf st = bfs 1 (setNew $ ordSt st) (setNew $ ordSt st)
         actions = [toEnum 0 ..]
 
 loopIO :: Set A -> [(Moves, A)] -> IO (Maybe A, [A])
-loopIO set as = do 
-    return (foldl func (\acc -> (Nothing, acc)) as []) 
+loopIO set as = return ((go as) []) 
   
   where
-    func goxs x = \acc ->  
+    go [] = (\acc ->  (Nothing, acc))
+    go (x:xs) = func x (go xs)
+    
+    func x goxs = \acc ->  
         case uncurry funcSucess x of
             Nothing -> goxs acc 
             Just cm -> 

@@ -41,44 +41,24 @@ solver t0 st = do
                 else do
                     putMyVar set (eOrd cm)
                     return r
-
-
-
-
 ----------------------------------------------------
-        subloop ms = bo [] [] (particiona 4 ms) 
-        
-          where
-            bo acc asyncs [] = waitLoop acc asyncs
-            bo acc asyncs (m:ms) = do
-
-{----------------------------------------------------
-                q <- obtemTicket semaf
-
-                if q then do
-                    let res = (go acc [] m) `finally` (liberaSemaf semaf)
-                    withAsync res $ \a -> 
-                        bo acc (a:asyncs) ms 
-
-                else do 
-----------------------------------------------------}
-
-                    r <- go acc [] m
-
-
-                    case r of
-                        (Just _, _)    -> return r
-                        (Nothing, acc) -> bo acc asyncs ms 
-                
+        subloop m = go [] [] m where
+            -- go :: [Async (MovType State)] -> [(Moves, State)] -> [State] -> IO (Maybe State, [State])
             go acc asyncs [] = waitLoop acc asyncs
             go acc asyncs (x:xs) =  do
-                resolve2 (go, acc, asyncs, xs) =<< resolve =<< uncurry funcSucess x
+                q <- obtemTicket semaf
+                if q then do
+                    let res = (uncurry funcSucess x) `finally` (liberaSemaf semaf)
+                    withAsync res $ \a -> 
+                        go acc (a:asyncs) xs 
 
-            resolve2 (go, acc, asyncs, xs) r = case r of
-                Goal cm     -> return (Just cm, [])
-                Invalid     -> go acc      asyncs xs
-                Factible cm -> go (cm:acc) asyncs xs
-
+                else do 
+                    -- resolve1 :: (Moves, State) -> IO (MovType State)
+                    r <- resolve =<< uncurry funcSucess x
+                    case r of
+                        Goal cm     -> return (Just cm, [])
+                        Invalid     -> go acc      asyncs xs
+                        Factible cm -> go (cm:acc) asyncs xs
 ----------------------------------------------------
         waitLoop = go where
             -- go :: [State] -> [Async (MovType State)] -> IO (Maybe State, [State])
@@ -95,12 +75,6 @@ solver t0 st = do
 
 actions :: [Moves]
 actions = [toEnum 0 ..]
-    
-particiona :: Int -> [a] -> [[a]]
-particiona n m = go m n where
-    go _ 0 = []
-    go m n = a : go b (n-1) where
-        (a, b) = splitAt (length m `div` n) m
     
 
 

@@ -1,8 +1,8 @@
 module Sokoban where
+
 ----------------------------------------------------
+data Moves = Cima | Esq | Dir | Baixo deriving (Enum, Eq, Bounded, Ord)
 ----------------------------------------------------
-data Moves = Cima | Esq | Dir | Baixo
-    deriving (Enum, Eq, Bounded)
 
 instance Show Moves where
     show Cima  = "u"
@@ -10,81 +10,30 @@ instance Show Moves where
     show Esq   = "l"
     show Dir   = "r"
 
-----------------------------------------------------
-data State = S { player :: (Int, Int)
-               , box    :: [(Int, Int)]
-               , dots   :: [(Int, Int)]
-               , walls  :: [(Int, Int)]
-               , psh    :: Bool
-               } deriving Eq
-
-
-instance Ord State where
-    a <= b = ordSt a <= ordSt b
-    
-instance Show State where
-    show (S p b d w _) = foldl func1 "\n\t" (z testBoard) where
-    -- show (S p b d w) = foldl func1 "\n\t" (z testBoard) where
-       func1 buf (y, lin) = buf ++ "\n\t" ++  map (limpa y) (z lin)
-       limpa y (x, c) | (x, y) == p = '@'
-                      | elem (x,y) b = '$'
-                      | c == '$' || c == '@' = ' '
-                      | otherwise = c
-       z = zip [0..] 
-
-
-type A = (Bool, (Int, Int), [(Int, Int)])
--- type A = ((Int, Int), [(Int, Int)])
-ordSt :: State -> A
-ordSt x = (psh x, player x, box x)
--- ordSt x = (player x, box x)
-
-toState :: [String] -> State
-toState board = S p b d w False where
--- toState board = S p b d w where
-    [[p], b, d, w] = map proc ['@', '$', '.', '#'] 
-    proc e = [(x, y) | 
-        (y, s) <- zip [0..] board, 
-        (x, c) <- zip [0..] s, e == c]
-    
--- maxw = go testSt where
--- class Solvable where
 
 ----------------------------------------------------
+data MovType a = Invalid | Factible a | Goal a deriving Show
 ----------------------------------------------------
-isgoal :: A -> Bool
-isgoal = go where
-    go (False, _, _) = False
-    go (_, _, b) = calc b == calc (dots testSt)
-    -- go (_, b) = calc b == calc (dots testSt)
-
-calc :: [(Int, Int)] -> (Int, Int)
-calc x = (soma x, prod x)
-
-soma :: [(Int, Int)] -> Int
-soma xs = foldl (\acc (a, b) -> acc +  a*30+b)  0 xs
-
-prod :: [(Int, Int)] -> Int
-prod xs = foldl (\acc (a, b) -> acc * (a*30+b)) 1 xs
 
 
-----------------------------------------------------
-funcSucess :: Moves -> A -> Maybe A
-funcSucess dir (_, p, b) 
--- funcSucess dir (p, b) 
-    | boxfix = Nothing 
-    | bounds = Nothing 
-    | otherwise = Just (psh, p', b') 
-    -- | otherwise = Just (p', b') 
+funcSucess :: Moves -> State -> IO (MovType State)
+funcSucess pa pb = return (go pa pb) where 
+  go dir' (S p b d w psh pat dir)
+        | isgoal (S p b' d w psh [] dir) = Goal (S p' b' d w psh' pat' dir')  -- A
+        -- | voltar  = Invalid 
+        | bounds = Invalid 
+        | boxfix = Invalid
+        | otherwise = Factible (S p' b' d w psh' pat' dir')
+  
+   where
+    p'   = addT p  (pos dir')
+    p''  = addT p' (pos dir')
+    pat' = dir':pat
+    psh' = find p' b
 
-  where 
-    w = walls testSt
-    p'  = addT p  (pos dir)
-    p'' = addT p' (pos dir)
-
-    psh = elem p' b
-    bounds = elem p' w
-    boxfix = psh && (elem p'' w || elem p'' b)
+    bounds = find p' w
+    boxfix = psh' && (find p'' b || find p'' w)
+    voltar = (not psh) && (dir' == volta dir) 
     
     b' = push b
     push [] = []
@@ -98,7 +47,64 @@ funcSucess dir (_, p, b)
     
     addT (a, b) (c, d) = (a+c, b+d)
 
+find :: (Foldable t, Eq a) => a -> t a -> Bool
+find = any . (==)
+
+isgoal :: State -> Bool -- estado terminal
+isgoal = go . box  where
+    go b = calc b == calc (dots testSt) -- A
+
+calc :: [(Int, Int)] -> (Int, Int)
+calc x = (soma x, prod x)
+
+soma :: [(Int, Int)] -> Int
+soma xs = foldl (\acc (a, b) -> acc +  a*30+b)  0 xs
+
+prod :: [(Int, Int)] -> Int
+prod xs = foldl (\acc (a, b) -> acc * (a*30+b)) 1 xs
+
+volta :: Moves -> Moves
+volta x = toEnum ((fromEnum (maxBound :: Moves)) - fromEnum x)
+
 ----------------------------------------------------
+data State = S { player :: (Int, Int)
+               , box    :: [(Int, Int)]
+               , dots   :: [(Int, Int)]
+               , walls  :: [(Int, Int)]
+               , push   :: Bool
+               , pat    :: [Moves]
+               , dir    :: Moves
+               } deriving Eq
+----------------------------------------------------
+
+toState :: [String] -> State
+toState board = S p b d w False [] Dir where -- A
+    [[p], b, d, w] = map proc ['@', '$', '.', '#'] 
+    proc e = [(x, y) | 
+        (y, s) <- zip [0..] board, 
+        (x, c) <- zip [0..] s, e == c]
+    
+
+{----------------------------------------------------
+instance Ord State where
+    a <= b = (player a, box a) <= (player b, box b)
+----------------------------------------------------}
+    
+instance Show State where
+    show (S p b d w _ pat _) = foldl func1 "\n\t" (z testBoard)  ++ "\n" ++ reverse (concatMap show pat) where -- A
+       func1 buf (y, lin) = buf ++ "\n\t" ++  map (limpa y) (z lin)
+       limpa y (x, c) | (x, y) == p = '@'
+                      | find (x,y) b = '$'
+                      | c == '$' || c == '@' = ' '
+                      | otherwise = c
+       z = zip [0..] 
+
+
+-- class Solvable where
+
+----------------------------------------------------
+----------------------------------------------------
+
 
 
 
@@ -192,8 +198,14 @@ testBoard = [ "#######",
 
 -- 30s sokoRosetta
 -- 17s loopIO (sem pat2st)
+-- 5s  eOrd st = (player st, box st)
+-- 2s  eOrd st = (player st, calc (box st))
 
 {----------------------------------------------------
+
+luullulddurrrddlulrrullrrurullluld
+ulullulddurrrddlulrrullrrurullluld
+
     (1,0s,2,2,1)
     (2,0.001002s,3,4,2)
     (3,0.001002s,2,4,3)
@@ -248,6 +260,8 @@ testBoard = [ "#######",
               "#######"]
 
 -- 0.1384583s (uniq + filterSet) 23 iter
+-- 1.53 case uncurry funcSucess x of
+
 
 ----------------------------------------------------}
 
@@ -288,27 +302,14 @@ testBoard = [ "#############",
 
 
 {----------------------------------------------------
-    
     https://pt.wikipedia.org/wiki/PSPACE-completude    
     
     http://professor.ufabc.edu.br/~e.francesquini/2018.q3.pp/projeto02/
-    
 ----------------------------------------------------}    
 
 
-{----------------------------------------------------
 
-----------------------------------------------------
-pat2st :: [Moves] -> Maybe State
-pat2st [] = Just testSt
-pat2st (x:xs) = func x (pat2st xs) where
-    func x Nothing = Nothing
-    func x (Just st) = move x st
 
-----------------------------------------------------
-type UnicSok = A
-unicSokoban :: State -> UnicSok
--- unicSokoban :: Ord a => State -> a
-unicSokoban s = (player s, box s)
 
-----------------------------------------------------}
+
+

@@ -45,7 +45,6 @@ insert set x = go x set where
             GT -> Bin y esq (go x dir)
             _  -> t
 
-
 eOrd st = (player st, calc (box st))
 
 setNew x = do

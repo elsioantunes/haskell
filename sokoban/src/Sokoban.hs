@@ -74,7 +74,7 @@ data State = S { player :: (Int, Int)
                , push   :: Bool
                , pat    :: [Moves]
                , dir    :: Moves
-               } deriving Eq
+               } deriving (Eq, Ord)
 ----------------------------------------------------
 
 toState :: [String] -> State

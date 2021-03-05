@@ -1,10 +1,10 @@
 module Bench where
 -- stack exec bench -- --output range.htm
 
-main :: IO()
-main = print 666
+-- main :: IO()
+-- main = print 666
 
-{----------------------------------------------------
+----------------------------------------------------
 import Criterion.Main
 import qualified Main as P
 
@@ -12,7 +12,7 @@ main :: IO()
 main = defaultMain [
             -- bgroup "pipe8" [teste1 ((i*i)) | i <- [1..10]],
             -- bgroup "reduce2" [teste0 ((i*i)) | i <- [2,3,4]],
-            bgroup "sokoban" [teste2 ((i*i)) | i <- [0..5]]
+            bgroup "sokoban" [teste2 (2*a,2*b) | a <- [0..10], b <- [0..10]]
       ]
   
   where
@@ -23,4 +23,4 @@ main = defaultMain [
     
     
 
-----------------------------------------------------}
+{----------------------------------------------------}

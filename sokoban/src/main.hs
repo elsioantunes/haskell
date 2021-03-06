@@ -16,12 +16,11 @@ import Control.Exception (finally, bracket)
 solver t0 st p1 p2 = do
     set    <- newMyVar (eOrd st)
     stSet  <- newMyVar st
-    semaf  <- newSemaf p1
     
-    bfs 1 set stSet [st] semaf
+    bfs 1 set stSet [st] 
    
   where -- escopo solver
-    bfs iter set stSet sts semaf = do
+    bfs iter set stSet sts  = do
 
         r <- loop ts 
         case r of
@@ -29,7 +28,7 @@ solver t0 st p1 p2 = do
             Nothing -> do
                 sts'    <- listMyVar stSet
                 stSet'  <- newMyVar st
-                bfs iter' set stSet' sts' semaf
+                bfs iter' set stSet' sts' 
 
       where  -- escopo bfs
         iter' = iter + 1
@@ -40,22 +39,27 @@ solver t0 st p1 p2 = do
 
         ----------------------------------------------------
         loop :: [(Moves, State)] -> IO (Maybe State)
-        loop m = go (particiona (p2 + 1) m) []  where
-            go []     = waitLoop
-            go (xs:xss) = \asyncs -> do
+        loop m = do
+            semaf <- newSemaf p1
+            go semaf (particiona (p2 + 1) m) []
+            
+          where
+            
+            go semaf []       = waitLoop
+            go semaf (xs:xss) = \asyncs -> do
                 
                 q <- obtemTicket semaf
                 if q then do
 
                     let res = (subloop xs) `finally` (liberaSemaf semaf)
                     withAsync res $ \a -> 
-                        go xss (a:asyncs) 
+                        go semaf xss (a:asyncs) 
 
                 else do 
                     r <- subloop xs
                     case r of
                         Just cm -> return r
-                        Nothing -> go xss asyncs
+                        Nothing -> go semaf xss asyncs
 
         ----------------------------------------------------
         waitLoop :: [Async (Maybe State)] -> IO (Maybe State)

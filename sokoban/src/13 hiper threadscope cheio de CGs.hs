@@ -23,13 +23,18 @@ solver t0 st p1 p2 = do
   where -- escopo solver
     bfs iter set stSet sts semaf = do
 
-        r <- loop ts 
-        case r of
-            Just x  -> return (Just x)
-            Nothing -> do
-                sts'    <- listMyVar stSet
-                stSet'  <- newMyVar st
-                bfs iter' set stSet' sts' semaf
+    --  if iter > 50 then
+    --      return Nothing
+    --  else do
+            -- debug iter t0 sts ts
+
+            r <- loop ts 
+            case r of
+                Just x  -> return (Just x)
+                Nothing -> do
+                    sts'    <- listMyVar stSet
+                    stSet'  <- newMyVar st
+                    bfs iter' set stSet' sts' semaf
 
       where  -- escopo bfs
         iter' = iter + 1
@@ -39,7 +44,6 @@ solver t0 st p1 p2 = do
 
 
         ----------------------------------------------------
-        loop :: [(Moves, State)] -> IO (Maybe State)
         loop m = go (particiona (p2 + 1) m) []  where
             go []     = waitLoop
             go (xs:xss) = \asyncs -> do
@@ -58,9 +62,8 @@ solver t0 st p1 p2 = do
                         Nothing -> go xss asyncs
 
         ----------------------------------------------------
-        waitLoop :: [Async (Maybe State)] -> IO (Maybe State)
         waitLoop = go where 
-            go []       = return Nothing
+            go []     = return Nothing
             go (xs:xss) = do
                 r <- wait xs
                 case r of
@@ -68,7 +71,6 @@ solver t0 st p1 p2 = do
                     Nothing -> go xss 
 
         ----------------------------------------------------
-        subloop :: [(Moves, State)] -> IO (Maybe State)
         subloop m = go m  where
             go []     = return Nothing
             go (x:xs) = do
@@ -76,14 +78,10 @@ solver t0 st p1 p2 = do
                 case r of
                     Goal cm     -> return (Just cm)
                     Invalid     -> go xs
-                    Factible cm -> do 
-                        putMyVar stSet cm 
-                        go xs 
+                    Factible cm -> putMyVar stSet cm >> go xs 
                         
-
-        ----------------------------------------------------
-        resolve :: (Moves, State) -> IO (MovType State)
-        resolve (m, s) = filtrVisit =<< funcSucess m s
+            resolve :: (Moves, State) -> IO (MovType State)
+            resolve (m, s) = filtrVisit =<< funcSucess m s
                         
         ----------------------------------------------------
         filtrVisit :: MovType State -> IO (MovType State)
@@ -193,54 +191,3 @@ bfnJG t = t' where
 
 
 teste3 = bfnJG (Bin 'a' (Bin 'a' Empty Empty) (Bin 'a' Empty Empty))
-
-
-
-
--- 11.7 - Programação Funcional em Haskell: Monad State
--- https://youtu.be/_yKJ2ft9Lg4?list=PLYItvall0TqJ25sVTLcMhxsE0Hci58mpQ
-
-
-
-
-
-
-newSemaf2 :: e -> ST e ()
-newSemaf2 n = ST (\m -> ((), n))
-
-
-obtemTicket2 :: ST Int Bool
-obtemTicket2 = ST cont where
-    cont m | m == 0    = (False, 0)
-           | otherwise = (True, m - 1)
-           
-liberaSemaf2 :: ST Int ()
-liberaSemaf2 = ST (\m -> ((), m + 1))
-
-
-
---------------------------------------------
---------------------------------------------
-newtype ST e a = ST {runstate :: (e -> (a, e))}
---------------------------------------------
-instance Monad (ST e) where
-   ST g >>= h = ST (\e ->
-                    let (x, e') = g e
-                        ST f = h x
-                        
-                    in  f e')
---------------------------------------------
-instance Applicative (ST e)  where
-    pure a = ST (\e -> (a, e))
-    stf <*> stx = do
-                    f <- stf
-                    fmap f stx
---------------------------------------------
-instance Functor (ST s) where
-    fmap f st = do
-                  x <- st
-                  return (f x)
---------------------------------------------
---------------------------------------------
-
-

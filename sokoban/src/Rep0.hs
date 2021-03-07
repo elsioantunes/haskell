@@ -4,12 +4,12 @@ import Sokoban
 
 import Data.IORef (IORef (..), newIORef, readIORef, atomicModifyIORef) 
 
+{----------------------------------------------------
+----------------------------------------------------
 arv = arvore aplica
 testeIdx = indexa arv [Cima]
 
 
-----------------------------------------------------
-----------------------------------------------------
 aplica :: [Moves] -> IO (MovType State) 
 aplica []     = return (Factible testSt)
 aplica (m:ms) = do
@@ -28,6 +28,15 @@ indexa (No x ts) []     = x
 indexa (No x ts) (m:ms) = indexa (ts !! fromEnum m) ms
 
 ----------------------------------------------------
+----------------------------------------------------}
+
+
+
+
+
+
+----------------------------------------------------
+-- data MovType a = Invalid | Factible a | Goal a deriving Show
 ----------------------------------------------------
 
 
@@ -37,6 +46,8 @@ indexa (No x ts) (m:ms) = indexa (ts !! fromEnum m) ms
 data Set a = Bin a (Set a) (Set a) |  Empty deriving Show
 data Arv s = No s [Arv s] deriving Show
 ----------------------------------------------------
+
+insert :: Ord a => Set a -> a -> Set a
 insert set x = go x set where
     go x Empty = Bin x Empty Empty
     go x t@(Bin y esq dir) = 
@@ -44,6 +55,9 @@ insert set x = go x set where
             LT -> Bin y (go x esq) dir
             GT -> Bin y esq (go x dir)
             _  -> t
+
+merge Empty t2 = t2
+merge (Bin a esq dir) t2 = Bin a (merge esq t2) dir
 
 eOrd st = (player st, calc (box st))
 
@@ -64,6 +78,7 @@ member set x = go x set where
             LT -> go x esq
             GT -> go x dir
             _  -> True
+            
 ----------------------------------------------------
 ----------------------------------------------------
 
@@ -86,15 +101,29 @@ putMyVar m a = atomicModifyIORef m updt
   where
     updt set = (insert set a, ())
 
+putMyVarS :: Ord a => IORef (Set a) -> [a] -> IO ()
+putMyVarS m as = atomicModifyIORef m updt
+  where
+    updt set = (foldl insert set as, ())
+
 lookupMyVar :: Ord t => IORef (Set t) -> t -> IO Bool
 lookupMyVar m a = do
     set <- readIORef m
     return (member set a)
-    
+
 listMyVar :: IORef (Set a) -> IO [a]
 listMyVar m = do
     set <- readIORef m
     return (tolist set)
+
+withMyVar :: Ord a => IORef (Set a) -> a -> IO b -> IO b -> IO b
+withMyVar m a act1 act2 = do
+    set <- readIORef m
+    if (member set a) then act1
+    else do
+        putMyVar m a
+        act2
+    
 
 ----------------------------------------------------
 ----------------------------------------------------

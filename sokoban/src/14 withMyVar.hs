@@ -12,27 +12,23 @@ import Control.Exception (finally, bracket)
 
 -----------------------------------------------------
 -----------------------------------------------------
-solver :: UTCTime -> State -> Int -> Int -> IO (Maybe State)
+-- solver :: UTCTime -> State -> IO (Maybe State)
 solver t0 st p1 p2 = do
     set    <- newMyVar (eOrd st)
-    bfs 1 set [st] 
+    stSet  <- newMyVar st
+    
+    bfs 1 set stSet [st] 
    
   where -- escopo solver
-    bfs iter set sts  = do
+    bfs iter set stSet sts  = do
 
-        debug iter t0 sts sts
-        
-        if iter < 50 then do
-        
-            r <- loop ts 
-            case r of
-                (Just x, _)   -> return (Just x)
-                (Nothing, stSet') -> do
-                    -- sts'    <- listMyVar stSet
-                    -- stSet'  <- newMyVar st
-                    bfs iter' set (tolist stSet') 
-        else 
-            return Nothing
+        r <- loop ts 
+        case r of
+            Just x  -> return (Just x)
+            Nothing -> do
+                sts'    <- listMyVar stSet
+                stSet'  <- newMyVar st
+                bfs iter' set stSet' sts' 
 
       where  -- escopo bfs
         iter' = iter + 1
@@ -41,67 +37,63 @@ solver t0 st p1 p2 = do
 
 
 
-
         ----------------------------------------------------
-        -- loop :: [(Moves, State)] -> IO (Maybe State)
+        loop :: [(Moves, State)] -> IO (Maybe State)
         loop m = do
             semaf <- newSemaf p1
-            -- stSet <- newMyVar st
-            let stSet = insert Empty st
-            go stSet semaf (particiona (p2+1) m) []
+            go semaf (particiona (p2 + 1) m) []
             
-          where -- escopo loop de nivel
+          where
             
-            go stSet semaf [] = waitLoop stSet
-              where
-                waitLoop stSet' [] = do 
-                    return (Nothing, stSet')
-                
-                waitLoop stSet (xs:xss) = do
-                    r <- wait xs
-                    case r of
-                        (Just cm, _) -> return r
-                        (Nothing, stSet') -> waitLoop (merge stSet stSet') xss 
-
-
-            go stSet semaf (xs:xss) = \asyncs -> do
+            go semaf []       = waitLoop
+            go semaf (xs:xss) = \asyncs -> do
                 
                 q <- obtemTicket semaf
                 if q then do
 
-                    let res = (subloop stSet xs) `finally` (liberaSemaf semaf)
-                    
+                    let res = (subloop xs) `finally` (liberaSemaf semaf)
                     withAsync res $ \a -> 
-                        go stSet semaf xss (a:asyncs) 
+                        go semaf xss (a:asyncs) 
 
                 else do 
-                    r <- subloop stSet xs
+                    r <- subloop xs
                     case r of
-                        (Just cm, _) -> return r
-                        (Nothing, stSet') -> go stSet' semaf xss asyncs
+                        Just cm -> return r
+                        Nothing -> go semaf xss asyncs
 
-              where
-                subloop stSet m = go stSet m  where
-                    go stSet []     = return (Nothing, stSet)
-                    go stSet ((m, s):xs) = do
-                        let r = funcSucess m s
-                        case r of
-                            Goal cm     -> return (Just cm, stSet)
-                            Invalid     -> go stSet xs
-                            Factible cm -> do
+        ----------------------------------------------------
+        waitLoop :: [Async (Maybe State)] -> IO (Maybe State)
+        waitLoop = go where 
+            go []       = return Nothing
+            go (xs:xss) = do
+                r <- wait xs
+                case r of
+                    Just cm -> return r
+                    Nothing -> go xss 
 
-                                look <- lookupMyVar set (eOrd cm)
-                                if look then 
-                                    go stSet xs
-                                else do
-                                
-                                    putMyVar set (eOrd cm)
-                                    go (insert stSet cm) xs
-                                
+        ----------------------------------------------------
+        subloop :: [(Moves, State)] -> IO (Maybe State)
+        subloop m = go m  where
+            go []     = return Nothing
+            go ((m, s):xs) = do
+                let r = funcSucess m s
+                case r of
+                    Goal cm     -> return (Just cm)
+                    Invalid     -> go xs
 
-
-
-
+                    Factible cm -> do
+                        
+                        withMyVar set (eOrd cm) (
+                                go xs
+                            ) (
+                                withMyVar stSet cm (
+                                        go xs
+                                    ) (
+                                        go xs
+                                )
+                            )
+                            
+                            
 
 
 
@@ -150,10 +142,11 @@ debug iter t0 sts sts' = do
 
 
 
-ret0f :: UTCTime -> IO (Maybe State)
+-----------------------------------------------------
+-----------------------------------------------------
 ret0f t0 = do
-    solver t0 testSt 24 24
-
+    -- solver t0 testSt 18 2
+    solver t0 testSt 18 2
 --------------------------
 main :: IO ()
 main = do
@@ -163,15 +156,14 @@ main = do
         print r
         t1 <- getCurrentTime
         print (diffUTCTime t1 t0)
-
-
 -----------------------------------------------------
-
 taskIO (p1, p2) = do
     t0 <- getCurrentTime
     solver t0 testSt p1 p2
     t1 <- getCurrentTime
     print (diffUTCTime t1 t0)
+    
+
 -----------------------------------------------------
 
 

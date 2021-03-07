@@ -15,9 +15,9 @@ instance Show Moves where
 data MovType a = Invalid | Factible a | Goal a deriving Show
 ----------------------------------------------------
 
-
-funcSucess :: Moves -> State -> IO (MovType State)
-funcSucess pa pb = return (go pa pb) where 
+-- funcSucess :: Moves -> State -> IO (MovType State)
+-- funcSucess pa pb = return (go pa pb) where 
+funcSucess pa pb = (go pa pb) where 
   go dir' (S p b d w psh pat dir)
         | isgoal (S p b' d w psh [] dir) = Goal (S p' b' d w psh' pat' dir')  -- A
         -- | voltar  = Invalid 

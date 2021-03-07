@@ -12,7 +12,8 @@ main :: IO()
 main = defaultMain [
             -- bgroup "pipe8" [teste1 ((i*i)) | i <- [1..10]],
             -- bgroup "reduce2" [teste0 ((i*i)) | i <- [2,3,4]],
-            bgroup "sokoban" [teste2 (2*a,2*b) | a <- [0..10], b <- [0..10]]
+            bgroup "sokoban" [teste2 (7*a,7*b) | a <- [0..1], b <- [0..1],  (a - b) > -2],
+            bgroup "sokoban" [teste2 (5*a,5*b) | a <- [4..7], b <- [4..7],  (a - b) > -2]
       ]
   
   where

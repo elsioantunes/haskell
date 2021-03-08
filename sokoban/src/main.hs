@@ -12,8 +12,9 @@ import Control.Exception (finally, bracket)
 
 -----------------------------------------------------
 -----------------------------------------------------
-type Jobs = [(Moves, State)]
-type Box = (Maybe State, Set State)
+type Jobs     = [(Moves, State)]
+type Box      = (Maybe State, Set State)
+type Pacote = Set Jobs
 
 solver :: UTCTime -> State -> Int -> IO (Maybe State)
 solver t0 st p2 = do
@@ -34,54 +35,93 @@ solver t0 st p2 = do
                 (Just x, _)   -> return (Just x)
                 (Nothing, stSet') -> bfs iter' visit (tolist stSet') 
 
-
       where  -- escopo bfs
         iter' = iter + 1
-        front = setNew st
         jobs  = [(m, s) | s  <- sts, m  <- actions]
-        particoes = particiona p2
-
-
 
         ----------------------------------------------------
         loop :: Jobs -> IO Box
-        loop m = 
-            asyncLoop front (particoes m)
-            
-        asyncLoop :: Set State -> [Jobs] -> IO Box
-        asyncLoop stSet = go []  where
-            go asyncs []       =  waitLoop stSet asyncs
-            go asyncs (xs:xss) =  
-                withAsync (subloop stSet xs) $ \a -> 
-                    go (a:asyncs) xss  
+        loop m = asyncLoop (setNew st) (particiona2 p2 m)
+          where
+            asyncLoop :: Set State -> Pacote -> IO Box
+            asyncLoop stSet = go Empty
+               where
+                go :: Set (Async Box) -> Pacote -> IO Box
+                go asyncs Empty       =  waitLoop stSet asyncs
+                go asyncs (Bin xs esq dir) =  
+                    withAsync (subloop stSet xs) $ \a -> 
+                        go (insert asyncs a) (merge esq dir)
+                        
 
-        waitLoop :: Set State -> [Async Box] -> IO Box
-        waitLoop stSet' [] = return (Nothing, stSet')
-        waitLoop stSet (xs:xss) = do
-            r <- wait xs
-            case r of
-                (Just cm, _) -> return r
-                (Nothing, stSet') -> 
-                    waitLoop (merge stSet stSet') xss 
+                subloop :: Set State -> Jobs -> IO Box
+                subloop stSet' []     = return (Nothing, stSet')
+                subloop stSet (x:xs) = do
+                    case (funcSucess x) of
+                        Goal cm     -> return (Just cm, Empty)
+                        Invalid     -> subloop stSet xs
+                        Factible cm -> do
 
-        subloop :: Set State -> Jobs -> IO Box
-        subloop stSet' []     = return (Nothing, stSet')
-        subloop stSet ((m, s):xs) = do
-            let r = funcSucess m s
-            case r of
-                Goal cm     -> return (Just cm, stSet)
-                Invalid     -> subloop stSet xs
-                Factible cm -> do
+                            look <- lookupMyVar visit (eOrd cm)
+                            if look then 
+                                subloop stSet xs
+                            else do
 
-                    look <- lookupMyVar visit (eOrd cm)
-                    if look then 
-                        subloop stSet xs
-                    else do
+                                putMyVar visit (eOrd cm)
+                                subloop (insert stSet cm) xs
 
-                        putMyVar visit (eOrd cm)
-                        subloop (insert stSet cm) xs
-                                
-        ----------------------------------------------------
+                waitLoop :: Set State -> Set (Async Box) -> IO Box
+                waitLoop stSet' Empty = return (Nothing, stSet')
+                waitLoop stSet (Bin xs esq dir) = do
+                    r <- wait xs
+                    case r of
+                        (Just cm, _) -> return r
+                        (Nothing, stSet') -> do 
+                            let stSet'' = merge stSet stSet'
+                            waitLoop stSet'' esq
+                            waitLoop stSet'' dir 
+
+        {----------------------------------------------------
+        loop :: Jobs -> IO Box
+        loop m = asyncLoop (setNew st) (particiona p2 m)
+          where
+            asyncLoop :: Set State -> Pacote -> IO Box
+            asyncLoop stSet = go []
+               where
+                go asyncs []       =  waitLoop stSet asyncs
+                go asyncs (xs:xss) =  
+                    withAsync (subloop stSet xs) $ \a -> 
+                        go (a:asyncs) xss 
+                        
+
+                subloop :: Set State -> Jobs -> IO Box
+                subloop stSet' []     = return (Nothing, stSet')
+                subloop stSet (x:xs) = do
+                    case (funcSucess x) of
+                        Goal cm     -> return (Just cm, Empty)
+                        Invalid     -> subloop stSet xs
+                        Factible cm -> do
+
+                            look <- lookupMyVar visit (eOrd cm)
+                            if look then 
+                                subloop stSet xs
+                            else do
+
+                                putMyVar visit (eOrd cm)
+                                subloop (insert stSet cm) xs
+
+                waitLoop :: Set State -> [Async Box] -> IO Box
+                waitLoop stSet' [] = return (Nothing, stSet')
+                waitLoop stSet (xs:xss) = do
+                    r <- wait xs
+                    case r of
+                        (Just cm, _) -> return r
+                        (Nothing, stSet') -> 
+                            waitLoop (merge stSet stSet') xss 
+
+        ----------------------------------------------------}
+
+
+
 
 
 
@@ -97,9 +137,10 @@ particiona n m = go m n where
     go m n = a : go b (n-1) where
         (a, b) = splitAt (length m `div` n) m
 
-
-
-
+particiona2 n m = foldr func Empty (particiona n m) 
+  where
+    func x goxs = insert goxs x
+    
 
 
 

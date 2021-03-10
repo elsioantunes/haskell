@@ -14,13 +14,10 @@ instance Show Moves where
 ----------------------------------------------------
 data MovType a = Invalid | Factible a | Goal a deriving Show
 ----------------------------------------------------
-
--- funcSucess :: Moves -> State -> IO (MovType State)
--- funcSucess pa pb = return (go pa pb) where 
-funcSucess pa pb = (go pa pb) where 
+funcSucess :: (Moves, State) -> MovType State
+funcSucess (pa, pb) = (go pa pb) where 
   go dir' (S p b d w psh pat dir)
         | isgoal (S p b' d w psh [] dir) = Goal (S p' b' d w psh' pat' dir')  -- A
-        -- | voltar  = Invalid 
         | bounds = Invalid 
         | boxfix = Invalid
         | otherwise = Factible (S p' b' d w psh' pat' dir')
@@ -33,7 +30,7 @@ funcSucess pa pb = (go pa pb) where
 
     bounds = find p' w
     boxfix = psh' && (find p'' b || find p'' w)
-    voltar = (not psh) && (dir' == volta dir) 
+    -- voltar = (not psh) && (dir' == volta dir) 
     
     b' = push b
     push [] = []
@@ -47,12 +44,12 @@ funcSucess pa pb = (go pa pb) where
     
     addT (a, b) (c, d) = (a+c, b+d)
 
-find :: (Foldable t, Eq a) => a -> t a -> Bool
-find = any . (==)
-
 isgoal :: State -> Bool -- estado terminal
 isgoal = go . box  where
     go b = calc b == calc (dots testSt) -- A
+
+find :: (Foldable t, Eq a) => a -> t a -> Bool
+find = any . (==)
 
 calc :: [(Int, Int)] -> (Int, Int)
 calc x = (soma x, prod x)
@@ -63,8 +60,8 @@ soma xs = foldl (\acc (a, b) -> acc +  a*30+b)  0 xs
 prod :: [(Int, Int)] -> Int
 prod xs = foldl (\acc (a, b) -> acc * (a*30+b)) 1 xs
 
-volta :: Moves -> Moves
-volta x = toEnum ((fromEnum (maxBound :: Moves)) - fromEnum x)
+-- volta :: Moves -> Moves
+-- volta x = toEnum ((fromEnum (maxBound :: Moves)) - fromEnum x)
 
 ----------------------------------------------------
 data State = S { player :: (Int, Int)
@@ -84,6 +81,8 @@ toState board = S p b d w False [] Dir where -- A
         (y, s) <- zip [0..] board, 
         (x, c) <- zip [0..] s, e == c]
     
+eOrd :: State -> ((Int, Int), (Int, Int))
+eOrd st = (player st, calc (box st))
 
 {----------------------------------------------------
 instance Ord State where
@@ -185,67 +184,6 @@ testBoard = [ "#######",
 
 
 
-----------------------------------------------------
-testSt = toState testBoard
-testBoard = [ "#######",
-              "#     #",
-              "#     #",
-              "#. #  #",
-              "#. $$ #",
-              "#.$$  #",
-              "#.#  @#",
-              "#######"]
-
--- 30s sokoRosetta
--- 17s loopIO (sem pat2st)
--- 5s  eOrd st = (player st, box st)
--- 2s  eOrd st = (player st, calc (box st))
-
-{----------------------------------------------------
-
-luullulddurrrddlulrrullrrurullluld
-ulullulddurrrddlulrrullrrurullluld
-
-    (1,0s,2,2,1)
-    (2,0.001002s,3,4,2)
-    (3,0.001002s,2,4,3)
-    (4,0.001002s,6,7,2)
-    (5,0.002006s,13,14,6)
-    (6,0.002006s,26,32,13)
-    (7,0.002006s,43,54,26)
-    (8,0.0040118s,76,96,43)
-    (9,0.0050152s,114,152,76)
-    (10,0.0090285s,179,237,114)
-    (11,0.014045s,247,339,179)
-    (12,0.0250817s,368,509,247)
-    (13,0.0441447s,508,698,368)
-    (14,0.0812689s,731,1036,508)
-    (15,0.1514997s,969,1369,731)
-    (16,0.2889548s,1365,1973,969)
-    (17,0.5387822s,1809,2553,1365)
-    (18,1.0294045s,2529,3646,1809)
-    (19,1.8581464s,3222,4624,2529)
-    (20,3.4082749s,4411,6438,3222)
-    (21,6.0690792s,5472,7968,4411)
-    (22,11.5050644s,7402,10937,5472)
-    (23,20.377416s,8936,13184,7402)
-    (24,39.5679073s,11979,17906,8936)
-    (25,70.5865331s,14214,21102,11979)
-    (26,139.6169152s,18837,28503,14214)
-    (27,246.8617299s,22056,33102,18837)
-    (28,464.309867s,28994,44229,22056)
-    (29,779.2321129s,33259,50444,28994)
-    (30,1335.4502334s,43383,66990,33259)
-    (31,2133.3534225s,49441,75318,43383)
-    (32,3504.2232103s,63382,99416,49441)
-    (33,5209.2691577s,70841,109168,63382)
-    (33,5577.1881767s,70841,109168,63382)
-    (34,5938.1934643s,89294,142392,70841) --  1.65 horas
-----------------------------------------------------}
-
-
-
----------------------------------------------------
 
 
 
@@ -261,6 +199,8 @@ testBoard = [ "#######",
 
 -- 0.1384583s (uniq + filterSet) 23 iter
 -- 1.53 case uncurry funcSucess x of
+-- 0.03 paralelo ((Nothing, stSet') -> waitLoop (merge stSet stSet') xss )
+-- ulullulddurrrddlulrrull 
 
 
 ----------------------------------------------------}
@@ -268,7 +208,65 @@ testBoard = [ "#######",
 
 
 
+
+----------------------------------------------------
+testSt = toState testBoard
+testBoard = [ "     #### ",
+              "    ##. ##",
+              "##### .  #",
+              "#   #  # #",
+              "# $ #  # #",
+              "# $  @   #",
+              "######  ##",
+              "     #### "]
+
+
+
+-- 16 'pushes' segundo rosetta 
+-- 53 lances
+-- 0.04s paralelo ((Nothing, stSet') -> waitLoop (merge stSet stSet') xss )
+-- lluullddrrrruuurrrdddldlullluuldldrrrrruuurrdddldluuu
+{----------------------------------------------------}
+
+
+
+
+{----------------------------------------------------
+testSt = toState testBoard
+testBoard = [ "#######",
+              "#     #",
+              "#     #",
+              "#. #  #",
+              "#. $$ #",
+              "#.$$  #",
+              "#.#  @#",
+              "#######"]
+
+-- primeira versão levou 15 horas (mas resolveu kkk)
+-- 30s sokoRosetta
+-- 17s loopIO (sem pat2st)
+-- 5s  eOrd st = (player st, box st)
+-- 2s serial,   eOrd st = (player st, calc (box st))
+-- 2s paralelo, look <- lookupMyVar set (eOrd cm) 
+----------------------------------------------------}
+
+
   
+
+{----------------------------------------------------
+testSt = toState testBoard
+testBoard = [ "#############",
+              "#  #        #",
+              "# $$$$$$$  @#",
+              "#.......    #",
+              "#############"]
+
+-- 30 lances segundo rosetta 
+-- ainda sem sol (uniq) 
+----------------------------------------------------}
+
+
+
 
 {----------------------------------------------------
 testSt = toState testBoard
@@ -278,22 +276,28 @@ testBoard = [ "#############",
               "#.......$ $ #",
               "#############"]
 
--- ainda sem sol (uniq)
+-- 76 lances?  lldlllllllluurDldRRRRRRRRuulD rdLLLLLLrrrrrurrrdLLLLLLLrrrruulDulDulDulDLLulD segundo rosettacode
+-- ainda sem sol (uniq) 
 ----------------------------------------------------}
 
 
 {---------------------------------------------------- LEVEL01
-    #####
-    #   #
-    #$  #
-  ###  $##
-  #  $ $ #
-### # ## #   ######
-#   # ## #####  ..#
-# $  $          ..#
-##### ### #@##  ..#
-    #     #########
-    #######
+testSt = toState testBoard
+testBoard = [ 
+    "    #####          ",
+    "    #   #          ",
+    "    #$  #          ",
+    "  ###  $##         ",
+    "  #  $ $ #         ",
+    "### # ## #   ######",
+    "#   # ## #####  ..#",
+    "# $  $          ..#",
+    "##### ### #@##  ..#",
+    "    #     #########",
+    "    #######        "]
+
+-- ainda sem sol (mesmo em paralelo)
+
 ----------------------------------------------------}
 
   

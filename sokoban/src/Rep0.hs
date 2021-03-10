@@ -2,7 +2,7 @@
 module Rep0 where
 import Sokoban
 
-import Data.IORef (IORef (..), newIORef, readIORef, atomicModifyIORef) 
+import Data.IORef (IORef (..), newIORef, readIORef, writeIORef, atomicModifyIORef) 
 
 {----------------------------------------------------
 ----------------------------------------------------
@@ -46,7 +46,6 @@ indexa (No x ts) (m:ms) = indexa (ts !! fromEnum m) ms
 data Set a = Bin a (Set a) (Set a) |  Empty deriving Show
 data Arv s = No s [Arv s] deriving Show
 ----------------------------------------------------
-
 insert :: Ord a => Set a -> a -> Set a
 insert set x = go x set where
     go x Empty = Bin x Empty Empty
@@ -56,21 +55,7 @@ insert set x = go x set where
             GT -> Bin y esq (go x dir)
             _  -> t
 
-merge Empty t2 = t2
-merge (Bin a esq dir) t2 = Bin a (merge esq t2) dir
-
-eOrd st = (player st, calc (box st))
-
-setNew x = do
-    insert Empty x
-
-tolist = go where
-    go Empty = []
-    go (Bin a esq dir) = go esq ++ go dir ++ [a]
-
-
-updateSet set m = foldl insert set m
-
+member :: Ord t => Set t -> t -> Bool
 member set x = go x set where
     go x Empty = False
     go x (Bin y esq dir) = 
@@ -79,6 +64,27 @@ member set x = go x set where
             GT -> go x dir
             _  -> True
             
+tolist :: Set a -> [a]
+tolist = go where
+    go Empty = []
+    go (Bin a esq dir) = go esq ++ [a] ++ go dir
+
+setNew :: Ord a => a -> Set a
+setNew x = do
+    insert Empty x
+
+merge Empty t2 = t2
+merge (Bin a esq dir) t2 = Bin a (merge esq t2) dir
+
+fromList :: (Foldable t, Ord a) => Set a -> t a -> Set a
+fromList set m = foldl insert set m
+
+map1 f = go where
+    go Empty = Empty
+    go (Bin a esq dir) = Bin (f a) (go esq) (go dir)
+
+
+
 ----------------------------------------------------
 ----------------------------------------------------
 
@@ -96,20 +102,10 @@ newMyVar a = do
     m <- newIORef (insert Empty a)
     return m
 
-putMyVar :: Ord a => IORef (Set a) -> a -> IO ()
-putMyVar m a = atomicModifyIORef m updt
-  where
-    updt set = (insert set a, ())
-
 putMyVarS :: Ord a => IORef (Set a) -> [a] -> IO ()
 putMyVarS m as = atomicModifyIORef m updt
   where
     updt set = (foldl insert set as, ())
-
-lookupMyVar :: Ord t => IORef (Set t) -> t -> IO Bool
-lookupMyVar m a = do
-    set <- readIORef m
-    return (member set a)
 
 listMyVar :: IORef (Set a) -> IO [a]
 listMyVar m = do
@@ -123,86 +119,52 @@ withMyVar m a act1 act2 = do
     else do
         putMyVar m a
         act2
+
+putMyVar :: Ord a => IORef (Set a) -> a -> IO ()
+putMyVar m a = atomicModifyIORef m updt
+  where
+    updt set = (insert set a, ())
+
+lookupMyVar :: Ord t => IORef (Set t) -> t -> IO Bool
+lookupMyVar m a = do
+    set <- readIORef m
+    return (member set a)
+
+
+filterMyVarsWith :: (Ord a, Ord b) => IORef (Set b) -> (a -> b) -> Set a -> IO (Set a)
+filterMyVarsWith m eOrd as = atomicModifyIORef m updt
+  where
+    updt bs = (bs, cs)
+      where
+        cs = filtreeSet bs eOrd as
     
 
-----------------------------------------------------
-----------------------------------------------------
-
-
-
-
-
-
-
-
-----------------------------------------------------
--- Semaforo ----------------------------------------
-type Semaf = IORef Int 
-
-newSemaf :: Int -> IO Semaf 
-newSemaf i = do
-    m <- newIORef i
-    return m
-
-obtemTicket :: Semaf -> IO Bool
-obtemTicket m = atomicModifyIORef m sem
-  where
-    sem :: Int ->    (Int, Bool)    
-    sem i | i == 0    = (i, False)
-          | otherwise = let  
-                          !z = i - 1
-                        in 
-                          (z, True)
-
-liberaSemaf :: Semaf -> IO ()
-liberaSemaf m = atomicModifyIORef m sem
-  where
-    sem :: Int ->    (Int, ())
-    sem i  = let
-               !z = i + 1 -- ? "avoid building up a large expression inside the IORef: 1 + 1 + 1 + ...." /Simon
-             in
-                (z, ())
-
-----------------------------------------------------
-----------------------------------------------------
-
-
-
-
-
-
 {----------------------------------------------------
-----------------------------------------------------
-data Set a = Bin a (Set a) (Set a) |  Empty deriving Show
-
-setNew :: Ord a => a -> Set a
-setNew x = do
-    insert Empty x
-
-tolist = go where
-    go Empty = []
-    go (Bin a esq dir) = go esq ++ go dir ++ [a]
-
-updateSet :: Ord a => Set a -> [a] -> Set a
-updateSet = foldl insert
-
-insert :: Ord a => Set a -> a -> Set a
-insert set x = go x set where
-    go x Empty = Bin x Empty Empty
-    go x t@(Bin y esq dir) = 
-        case compare x y of 
-            LT -> Bin y (go x esq) dir
-            GT -> Bin y esq (go x dir)
-            _  -> t
-
-member set x = go x set where
-    go x Empty = False
-    go x (Bin y esq dir) = 
-        case compare x y of 
-            LT -> go x esq
-            GT -> go x dir
-            _  -> True
 ----------------------------------------------------}
+
+filtree :: Ord a => (a -> Bool) -> Set a -> Set a
+filtree p set = foldr ins Empty (tolist set) 
+  where
+    ins x goxs | p x =  insert goxs x
+               | otherwise = goxs
+
+
+filtreeSet :: (Ord a, Ord b) => Set b -> (a -> b) -> Set a -> Set a
+filtreeSet bs eOrd as = filtree (not . member bs . eOrd) as
+    
+
+lengtree = go where
+    go Empty = 0
+    go (Bin _ esq dir) = 1 + go esq + go dir
+
+
+
+
+
+
+
+
+
 
 
 

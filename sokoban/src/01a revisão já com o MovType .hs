@@ -11,25 +11,18 @@ solver st = do
     let set = setNew st
     t0 <- getCurrentTime
     bfs t0 1 set 
-
   where 
     bfs t0 iter set = do
-
-        debug t0 iter jobs
-        
         r <- loopIO set jobs 
         case r of
             (Nothing, set') -> bfs t0 iter' set'
             (Just x, _)  -> return (Just x)
-
       where    
         iter' = iter + 1
         sts   = tolist set
         jobs  = [(m, s) | s  <- sts, m  <- actions]
-
     actions :: [Moves]
     actions = [toEnum 0 ..]
-
 
     loopIO :: Set State -> [(Moves, State)] -> IO (Maybe State, Set State)
     loopIO set = go Empty where

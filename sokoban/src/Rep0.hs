@@ -44,8 +44,7 @@ indexa (No x ts) (m:ms) = indexa (ts !! fromEnum m) ms
 
 ----------------------------------------------------
 data Set a = Bin a (Set a) (Set a) |  Empty deriving Show
-data Arv s = No s [Arv s] deriving Show
-----------------------------------------------------
+
 insert :: Ord a => Set a -> a -> Set a
 insert set x = go x set where
     go x Empty = Bin x Empty Empty

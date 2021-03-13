@@ -44,7 +44,8 @@ indexa (No x ts) (m:ms) = indexa (ts !! fromEnum m) ms
 
 ----------------------------------------------------
 data Set a = Bin a (Set a) (Set a) |  Empty deriving Show
-
+data Arv s = No s [Arv s] deriving Show
+----------------------------------------------------
 insert :: Ord a => Set a -> a -> Set a
 insert set x = go x set where
     go x Empty = Bin x Empty Empty
@@ -101,6 +102,17 @@ newMyVar a = do
     m <- newIORef (insert Empty a)
     return m
 
+putMyVar :: Ord a => IORef (Set a) -> a -> IO ()
+putMyVar m a = atomicModifyIORef m updt
+  where
+    updt set = (insert set a, ())
+
+lookupMyVar :: Ord t => IORef (Set t) -> t -> IO Bool
+lookupMyVar m a = do
+    set <- readIORef m
+    return (member set a)
+
+
 putMyVarS :: Ord a => IORef (Set a) -> [a] -> IO ()
 putMyVarS m as = atomicModifyIORef m updt
   where
@@ -118,16 +130,6 @@ withMyVar m a act1 act2 = do
     else do
         putMyVar m a
         act2
-
-putMyVar :: Ord a => IORef (Set a) -> a -> IO ()
-putMyVar m a = atomicModifyIORef m updt
-  where
-    updt set = (insert set a, ())
-
-lookupMyVar :: Ord t => IORef (Set t) -> t -> IO Bool
-lookupMyVar m a = do
-    set <- readIORef m
-    return (member set a)
 
 
 filterMyVarsWith :: (Ord a, Ord b) => IORef (Set b) -> (a -> b) -> Set a -> IO (Set a)
@@ -151,7 +153,7 @@ filtree p set = foldr ins Empty (tolist set)
 filtreeSet :: (Ord a, Ord b) => Set b -> (a -> b) -> Set a -> Set a
 filtreeSet bs eOrd as = filtree (not . member bs . eOrd) as
     
-
+lengtree :: Set a -> Int
 lengtree = go where
     go Empty = 0
     go (Bin _ esq dir) = 1 + go esq + go dir

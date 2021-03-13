@@ -87,15 +87,13 @@ solver t t0 st p2 dbug = do
         loop2 :: Jobs -> IO Box
         loop2 m = 
             asyncLoop (particiona p2 m) 
-
               where
                 asyncLoop :: [Jobs] -> IO Box
                 asyncLoop = go []    where
-                    go asyncs []               = waitLoop asyncs
-                    go asyncs (xs:xss)         =  
+                    go asyncs []       = waitLoop asyncs
+                    go asyncs (xs:xss) =  
                         withAsync (subloop xs) $ \a -> 
                             go (a:asyncs) xss 
-
                 waitLoop :: [Async Box] -> IO Box
                 waitLoop = go (setNew st) where
                     go stSet' []              = return (Nothing, stSet')
@@ -104,8 +102,7 @@ solver t t0 st p2 dbug = do
                         case r of                                                   
                             (Just cm, _) -> return r
                             (Nothing, stSet') -> 
-                                go (merge stSet stSet') xss        -- main loop list        
-                                                                     
+                                go (merge stSet stSet') xss         
                 subloop :: Jobs -> IO Box
                 subloop = go (setNew st) where
                     go stSet' []     = return (Nothing, stSet')

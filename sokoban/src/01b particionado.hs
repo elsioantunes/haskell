@@ -56,7 +56,6 @@ solver t t0 st p2 dbug = do
         loopIO :: Jobs -> IO Box
         loopIO m = 
             driver (particiona p2 m) 
-
               where
                 driver :: [Jobs] -> IO Box
                 driver = go (setNew st) where
@@ -67,7 +66,6 @@ solver t t0 st p2 dbug = do
                             (Just cm, _) -> return r
                             (Nothing, stSet') -> 
                                 go (merge stSet stSet') xss
-                                                                     
                 subloop :: Jobs -> IO Box
                 subloop = go (setNew st) where
                     go stSet' []     = return (Nothing, stSet')
@@ -76,12 +74,10 @@ solver t t0 st p2 dbug = do
                             Goal cm     -> return (Just cm, Empty)
                             Invalid     -> go stSet xs
                             Factible cm -> do
-
                                 look <- lookupMyVar visit (eOrd cm)
                                 if look then 
                                     go stSet xs
                                 else do
-
                                     putMyVar visit (eOrd cm)
                                     go (insert stSet cm) xs
 
@@ -267,7 +263,7 @@ teste3 = bfnJG (Bin 'a' (Bin 'a' Empty Empty) (Bin 'a' Empty Empty))
 
 
 
--- 11.7 - Programação Funcional em Haskell: Monad State
+-- 11.7 - ProgramaÃ§Ã£o Funcional em Haskell: Monad State
 -- https://youtu.be/_yKJ2ft9Lg4?list=PLYItvall0TqJ25sVTLcMhxsE0Hci58mpQ
 
 

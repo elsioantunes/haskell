@@ -71,7 +71,7 @@ solver t t0 st p2 dbug = do
                         case r of                                                   
                             (Just cm, _) -> return r
                             (Nothing, stSet') -> 
-                                go (merge stSet stSet') xss        -- main loop list        
+                                go (merge stSet stSet') xss     
                                                                      
                 subloop :: Jobs -> IO Box
                 subloop = go (setNew st) where
@@ -135,7 +135,7 @@ instance NFData a => NFData (Set a) where
     rnf (Bin x a b) = rnf x `seq` rnf a `seq` rnf b
 
 instance NFData (State) where  
-    rnf a = rnf a -- n„o sei pq isso funciona. mas funciona
+    rnf a = rnf a -- n√£o sei pq isso funciona. mas funciona
 
 
 
@@ -351,7 +351,7 @@ teste3 = bfnJG (Bin 'a' (Bin 'a' Empty Empty) (Bin 'a' Empty Empty))
 
 
 
--- 11.7 - ProgramaÁ„o Funcional em Haskell: Monad State
+-- 11.7 - Programa√ß√£o Funcional em Haskell: Monad State
 -- https://youtu.be/_yKJ2ft9Lg4?list=PLYItvall0TqJ25sVTLcMhxsE0Hci58mpQ
 
 

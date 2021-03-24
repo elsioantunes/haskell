@@ -18,11 +18,41 @@ executable sokoban
   hs-source-dirs:      src
   main-is:             Main.hs
   default-language:    Haskell2010
-  other-modules:       Sokoban
+  other-modules:       Sokoban, Rep0
   build-depends:       base >= 4.7 && < 5
                      , time
                      , process
                      , async
+                     , monad-par
+                     , deepseq
+
+
+executable asynkoban
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is Asynkoban
+  hs-source-dirs:      src
+  main-is:             Asynkoban.hs
+  default-language:    Haskell2010
+  other-modules:       Sokoban, Rep0
+  build-depends:       base >= 4.7 && < 5
+                     , time
+                     , process
+                     , async
+                     , monad-par
+                     , deepseq
+
+
+executable pipe
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N -eventlog -main-is Pipe
+  hs-source-dirs:      src
+  main-is:             pipe.hs
+  default-language:    Haskell2010
+  other-modules:       Sokoban, Rep0
+  build-depends:       base >= 4.7 && < 5
+                     , time
+                     , process
+                     , async
+                     , monad-par
+                     , deepseq
 
 
 executable bench
@@ -30,9 +60,11 @@ executable bench
   hs-source-dirs:      src
   main-is:             Bench.hs
   default-language:    Haskell2010
-  other-modules:       Sokoban, Main
+  other-modules:       Sokoban, Main, Rep0, Asynkoban
   build-depends:       base >= 4.7 && < 5
                      , time
                      , process
                      , async
+                     , monad-par
+                     , deepseq
                      , criterion

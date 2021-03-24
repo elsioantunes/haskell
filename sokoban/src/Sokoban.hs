@@ -3,7 +3,6 @@ module Sokoban where
 ----------------------------------------------------
 data Moves = Cima | Esq | Dir | Baixo deriving (Enum, Eq, Bounded, Ord)
 ----------------------------------------------------
-
 instance Show Moves where
     show Cima  = "u"
     show Baixo = "d"

@@ -9,8 +9,6 @@ instance Show Moves where
     show Baixo = "d"
     show Esq   = "l"
     show Dir   = "r"
-
-
 ----------------------------------------------------
 data MovType a = Invalid | Factible a | Goal a deriving Show
 ----------------------------------------------------
@@ -21,17 +19,13 @@ funcSucess (pa, pb) = (go pa pb) where
         | bounds = Invalid 
         | boxfix = Invalid
         | otherwise = Factible (S p' b' d w psh' pat' dir')
-  
    where
     p'   = addT p  (pos dir')
     p''  = addT p' (pos dir')
     pat' = dir':pat
     psh' = find p' b
-
     bounds = find p' w
     boxfix = psh' && (find p'' b || find p'' w)
-    -- voltar = (not psh) && (dir' == volta dir) 
-    
     b' = push b
     push [] = []
     push (x:xs) | x == p' = p'' : xs 

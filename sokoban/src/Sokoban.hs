@@ -3,11 +3,14 @@ module Sokoban where
 ----------------------------------------------------
 data Moves = Cima | Esq | Dir | Baixo deriving (Enum, Eq, Bounded, Ord)
 ----------------------------------------------------
+
 instance Show Moves where
     show Cima  = "u"
     show Baixo = "d"
     show Esq   = "l"
     show Dir   = "r"
+
+
 ----------------------------------------------------
 data MovType a = Invalid | Factible a | Goal a deriving Show
 ----------------------------------------------------
@@ -18,13 +21,17 @@ funcSucess (pa, pb) = (go pa pb) where
         | bounds = Invalid 
         | boxfix = Invalid
         | otherwise = Factible (S p' b' d w psh' pat' dir')
+  
    where
     p'   = addT p  (pos dir')
     p''  = addT p' (pos dir')
     pat' = dir':pat
     psh' = find p' b
+
     bounds = find p' w
     boxfix = psh' && (find p'' b || find p'' w)
+    -- voltar = (not psh) && (dir' == volta dir) 
+    
     b' = push b
     push [] = []
     push (x:xs) | x == p' = p'' : xs 
@@ -65,6 +72,7 @@ data State = S { player :: (Int, Int)
                , pat    :: [Moves]
                , dir    :: Moves
                } deriving (Eq, Ord)
+----------------------------------------------------
 
 toState :: [String] -> State
 toState board = S p b d w False [] Dir where -- A
@@ -72,14 +80,18 @@ toState board = S p b d w False [] Dir where -- A
     proc e = [(x, y) | 
         (y, s) <- zip [0..] board, 
         (x, c) <- zip [0..] s, e == c]
+    
 
 type StateMin = ((Int, Int), (Int, Int))
+
 eOrd :: State -> StateMin 
 eOrd st = (player st, calc (box st))
+
 
 data Stt = Stt { getstatemin :: StateMin
                , getiter :: Int
                }
+
 {----------------------------------------------------
 instance Ord State where
     a <= b = (player a, box a) <= (player b, box b)
@@ -252,7 +264,7 @@ testBoard = [ "#######",
               "#######"]
 
 -- luullulddurrrddlulrrullrrurullluld 34 mvs (record: 1.811s serial 2.4s async)
--- primeira versÃ£o levou 15 horas (mas resolveu kkk)
+-- primeira versão levou 15 horas (mas resolveu kkk)
 -- 30s sokoRosetta
 -- 17s loopIO (sem pat2st)
 -- 5s  eOrd st = (player st, box st)

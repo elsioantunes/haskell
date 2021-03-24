@@ -72,7 +72,6 @@ data State = S { player :: (Int, Int)
                , pat    :: [Moves]
                , dir    :: Moves
                } deriving (Eq, Ord)
-----------------------------------------------------
 
 toState :: [String] -> State
 toState board = S p b d w False [] Dir where -- A
@@ -80,18 +79,14 @@ toState board = S p b d w False [] Dir where -- A
     proc e = [(x, y) | 
         (y, s) <- zip [0..] board, 
         (x, c) <- zip [0..] s, e == c]
-    
 
 type StateMin = ((Int, Int), (Int, Int))
-
 eOrd :: State -> StateMin 
 eOrd st = (player st, calc (box st))
-
 
 data Stt = Stt { getstatemin :: StateMin
                , getiter :: Int
                }
-
 {----------------------------------------------------
 instance Ord State where
     a <= b = (player a, box a) <= (player b, box b)
@@ -264,7 +259,7 @@ testBoard = [ "#######",
               "#######"]
 
 -- luullulddurrrddlulrrullrrurullluld 34 mvs (record: 1.811s serial 2.4s async)
--- primeira versão levou 15 horas (mas resolveu kkk)
+-- primeira versÃ£o levou 15 horas (mas resolveu kkk)
 -- 30s sokoRosetta
 -- 17s loopIO (sem pat2st)
 -- 5s  eOrd st = (player st, box st)

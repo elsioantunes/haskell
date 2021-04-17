@@ -129,8 +129,6 @@ popMyVar m = atomicModifyIORef m updt
   where
     updt set = (Empty, tolist set)
 
-
-
 lookupMyVar :: Ord t => IORef (Set t) -> t -> IO Bool
 lookupMyVar m a = do
     set <- readIORef m

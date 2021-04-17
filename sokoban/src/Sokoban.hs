@@ -44,9 +44,9 @@ funcSucess (pa, pb) = (go pa pb) where
     
     addT (a, b) (c, d) = (a+c, b+d)
 
-isgoal :: State -> Bool -- estado terminal
+isgoal :: State -> Bool
 isgoal = go . box  where
-    go b = calc b == calc (dots testSt) -- A
+    go b = calc b == calc (dots testSt) 
 
 find :: (Foldable t, Eq a) => a -> t a -> Bool
 find = any . (==)
@@ -264,7 +264,7 @@ testBoard = [ "#######",
               "#######"]
 
 -- luullulddurrrddlulrrullrrurullluld 34 mvs (record: 1.811s serial 2.4s async)
--- primeira vers„o levou 15 horas (mas resolveu kkk)
+-- primeira vers√£o levou 15 horas (mas resolveu kkk)
 -- 30s sokoRosetta
 -- 17s loopIO (sem pat2st)
 -- 5s  eOrd st = (player st, box st)

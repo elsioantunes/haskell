@@ -11,38 +11,33 @@ instance Show Moves where
     show Dir   = "r"
 
 
-----------------------------------------------------
+-------------------------------------------------------------
 data MovType a = Invalid | Factible a | Goal a deriving Show
-----------------------------------------------------
+-------------------------------------------------------------
 funcSucess :: (Moves, State) -> MovType State
 funcSucess (pa, pb) = (go pa pb) where 
   go dir' (S p b d w psh pat dir)
-        | isgoal (S p b' d w psh [] dir) = Goal (S p' b' d w psh' pat' dir')  -- A
+        | isgoal (S p b' d w psh [] dir) = Goal (S p' b' d w psh' pat' dir') 
         | bounds = Invalid 
         | boxfix = Invalid
         | otherwise = Factible (S p' b' d w psh' pat' dir')
-  
    where
     p'   = addT p  (pos dir')
     p''  = addT p' (pos dir')
     pat' = dir':pat
     psh' = find p' b
-
     bounds = find p' w
     boxfix = psh' && (find p'' b || find p'' w)
-    -- voltar = (not psh) && (dir' == volta dir) 
-    
     b' = push b
     push [] = []
     push (x:xs) | x == p' = p'' : xs 
               | otherwise = x : push xs 
-
     pos Cima  = ( 0, -1)
     pos Baixo = ( 0,  1)
     pos Esq   = (-1,  0)
     pos Dir   = ( 1,  0)
-    
     addT (a, b) (c, d) = (a+c, b+d)
+
 
 isgoal :: State -> Bool
 isgoal = go . box  where

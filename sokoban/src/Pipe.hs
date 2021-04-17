@@ -55,17 +55,13 @@ pipe6 r m = sfold 0 =<< toilist m
         v <- new
         fork (loop m v)
         return v
-
     loop m v = do
         case m of
-            
             [] -> put v Nil 
-            
             (x:xs) -> do 
                 nv <- new
                 put v (Cons x nv)
                 loop xs nv
-
     sfold acc m =
         case acc of
             _ -> do

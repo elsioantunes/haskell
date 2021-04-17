@@ -184,35 +184,29 @@ pipe6a r m = sfold 0 =<< (toilist (particiona r m))
 -----------------------------------------------------
 -- com partição e rate limit
 -----------------------------------------------------
-pipe6cb r m = sfold 0 =<< toilist (particiona (16*r) m)
+pipe6cb r m = sfold 0 =<< toilist (particiona r m)
   where
-    --------------------------------------------
     toilist m = do
         v <- new
         fork (loop r m v)
         return v
 
     loop _ [] v = put v Nil
-
     loop 0 (x:xs) v = do
         nv <- new
         put v (Forque (loop r xs nv) (Cons x nv)) 
-        
     loop n (x:xs) v = do
         nv <- new
         put v (Cons x nv)
         loop (n-1) xs nv
     
-    ----------------------------------------------
     sfold acc m = acc `seq` do
         list <- get m
         case list of 
             Nil                   -> return acc
             Cons x xs             -> rec acc x xs
             Forque op (Cons x xs) -> fork op >> rec acc x xs
-    
     rec acc x xs = sfold (junta acc (resolveJunta x)) xs
-    ----------------------------------------------
             
 -----------------------------------------------------
         

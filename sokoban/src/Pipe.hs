@@ -26,14 +26,15 @@ main = do
 
 
 
------------------------------------------------------
------------------------------------------------------
-data IList a = Nil | Cons a (IVar (IList a)) | Forque (Par ()) (IList a)
 
+------------------------------------------------------------------------
+data IList a = Nil | Cons a (IVar (IList a)) | Forque (Par ()) (IList a)
+------------------------------------------------------------------------
 instance NFData a => NFData (IList a) where
   rnf Nil = ()
   rnf (Cons a b) = rnf a `seq` rnf b
   rnf (Forque a b) = a `seq` rnf b
+  
   
 -----------------------------------------------------
 -----------------------------------------------------
@@ -44,7 +45,7 @@ instance NFData a => NFData (IList a) where
 
 
 -----------------------------------------------------
--- pipe de stream básico, sem partição nem map 
+-- pipe de stream bÃ¡sico, sem partiÃ§Ã£o nem map 
 -----------------------------------------------------
 pipe6 :: Int -> [Integer] -> Par Int
 pipe6 r m = sfold 0 =<< toilist m
@@ -152,7 +153,7 @@ pipe5a r m = go (particiona r m) where
 
 
 -----------------------------------------------------
--- com partição
+-- com partiÃ§Ã£o
 -----------------------------------------------------
 pipe6a :: Int -> [Integer] -> Par Int
 pipe6a r m = sfold 0 =<< (toilist (particiona r m))
@@ -185,7 +186,7 @@ pipe6a r m = sfold 0 =<< (toilist (particiona r m))
 
 
 -----------------------------------------------------
--- com partição e rate limit
+-- com partiÃ§Ã£o e rate limit
 -----------------------------------------------------
 pipe6cb r m = sfold 0 =<< toilist (particiona (16*r) m)
   where
@@ -229,7 +230,7 @@ pipe6cb r m = sfold 0 =<< toilist (particiona (16*r) m)
 
 
 -----------------------------------------------------
--- versão especial, com rate limit e map, sem partição
+-- versÃ£o especial, com rate limit e map, sem partiÃ§Ã£o
 -----------------------------------------------------
 pipe7b0 r m = sfold 0 =<< smap =<< toilist m
 -----------------------------------------------------
@@ -288,7 +289,7 @@ pipe7b0 r m = sfold 0 =<< smap =<< toilist m
 
 
 -----------------------------------------------------
--- rate limit, map e partição
+-- rate limit, map e partiÃ§Ã£o
 -----------------------------------------------------
 pipe7a r m = sfold 0 =<< smap =<< toilist (particiona (4*r) m)
   where

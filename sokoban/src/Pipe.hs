@@ -347,31 +347,23 @@ pipe8 r m = do
     list_of_ilists' <- mapM smap list_of_ilists
     list_of_results <- mapM (sfold 0) list_of_ilists'
     return (foldr junta 0 list_of_results)
-    
   where
-    --------------------------------------------
     toilist m = do
         v <- new
         fork (loop r m v)
         return v
-
     loop _ [] v = put v Nil
-
     loop 0 (x:xs) v = do
         nv <- new
         put v (Forque (loop r xs nv) (Cons x nv))
-
     loop n (x:xs) v = do
         nv <- new
         put v (Cons x nv)
         loop (n-1) xs nv
-    
-    ----------------------------------------------
     smap m = do
         v <- new
         fork (loop m v)
         return v
-      
       where
         loop m v = do
             list <- get m
@@ -379,22 +371,17 @@ pipe8 r m = do
                 Nil                   -> put v Nil
                 Cons x xs             -> consSmap v x xs
                 Forque op (Cons x xs) -> fork op >> consSmap v x xs
-                
         consSmap v x xs = do
             nv <- new
             put v (Cons (resolveJunta x) nv)
             loop xs nv
-
-    ----------------------------------------------
     sfold acc m = acc `seq` do
         list <- get m
         case list of 
             Nil                   -> return acc
             Cons x xs             -> rec acc x xs
             Forque op (Cons x xs) -> fork op >> rec acc x xs
-    
     rec acc x xs = sfold (junta acc x) xs            
-    
 
 -----------------------------------------------------
 -----------------------------------------------------

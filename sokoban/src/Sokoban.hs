@@ -75,13 +75,12 @@ toState board = S p b d w False [] Dir where -- A
     proc e = [(x, y) | 
         (y, s) <- zip [0..] board, 
         (x, c) <- zip [0..] s, e == c]
-    
+
 
 type StateMin = ((Int, Int), (Int, Int))
 
 eOrd :: State -> StateMin 
 eOrd st = (player st, calc (box st))
-
 
 data Stt = Stt { getstatemin :: StateMin
                , getiter :: Int

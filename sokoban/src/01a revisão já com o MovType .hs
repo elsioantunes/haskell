@@ -8,16 +8,14 @@ import Sokoban
 -----------------------------------------------------
 solver :: State -> IO (Maybe State)
 solver st = do
-    let set = setNew st
-    bfs t0 1 set 
+    bfs (setNew st)
   where 
-    bfs t0 iter set = do
+    bfs set = do
         r <- loopIO set jobs 
         case r of
-            (Nothing, set') -> bfs t0 iter' set'
+            (Nothing, set') -> bfs set'
             (Just x, _)  -> return (Just x)
       where    
-        iter' = iter + 1
         sts   = tolist set
         jobs  = [(m, s) | s  <- sts, m  <- actions]
         

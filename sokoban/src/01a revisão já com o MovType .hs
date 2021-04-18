@@ -9,7 +9,6 @@ import Sokoban
 solver :: State -> IO (Maybe State)
 solver st = do
     let set = setNew st
-    t0 <- getCurrentTime
     bfs t0 1 set 
   where 
     bfs t0 iter set = do
@@ -21,9 +20,7 @@ solver st = do
         iter' = iter + 1
         sts   = tolist set
         jobs  = [(m, s) | s  <- sts, m  <- actions]
-    actions :: [Moves]
-    actions = [toEnum 0 ..]
-
+        
     loopIO :: Set State -> [(Moves, State)] -> IO (Maybe State, Set State)
     loopIO set = go Empty where
         go set' []     = return (Nothing, set')
@@ -33,6 +30,9 @@ solver st = do
                 Goal cm     -> return (Just cm, Empty)
                 Factible cm -> go (insert set' cm) xs
                 Invalid     -> go set' xs
+    
+    actions :: [Moves]
+    actions = [toEnum 0 ..]
                 
 
     
